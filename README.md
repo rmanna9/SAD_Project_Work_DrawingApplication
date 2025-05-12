@@ -17,4 +17,4 @@ https://docs.google.com/spreadsheets/d/1OVbUHsX4_5SGcCfeSjGofEdefG_a5oUwiZAQzRz-
 - Documentation Updated
 
 ## Docs
-Pre Game and 1st Sprint Planning -> https://docs.google.com/document/d/1Ly_wDIKy5ngb3NId6tFzA2WSrdePUeEU/edit
+Pre Game and 1st Sprint Planning: https://docs.google.com/document/d/1Ly_wDIKy5ngb3NId6tFzA2WSrdePUeEU/edit
