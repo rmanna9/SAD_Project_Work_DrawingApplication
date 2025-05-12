@@ -1,6 +1,5 @@
 # SAD_Project_Work_DrawingApplication
-repo del progetto dell'esame di Software Architecture Design.
-Traccia: Drawing Application
+Develop an application implementing a geometric drawing program
 
 ## Collegamneto alla board di Trello
 https://trello.com/b/Gcg5CR7I/project-work
