@@ -26,6 +26,11 @@ https://docs.google.com/spreadsheets/d/1OVbUHsX4_5SGcCfeSjGofEdefG_a5oUwiZAQzRz-
   - The final, reviewed, and tested code must be committed with meaningful messages and pushed to the shared version control repository 
 - Documentation updated
   - Any related technical or user documentation (e.g., architecture diagrams) must be updated to reflect the latest changes
+ 
+## Coding conventios
+- CamelCase for naming conventions 
+- All code elements, including variable names, method names, class names, comments, and documentation, must be written in English.
+- All public classes, methods, and important fields must be documented using Javadoc.
 
 ## Docs
 Pre Game and 1st Sprint Planning: https://docs.google.com/document/d/1Ly_wDIKy5ngb3NId6tFzA2WSrdePUeEU/edit
