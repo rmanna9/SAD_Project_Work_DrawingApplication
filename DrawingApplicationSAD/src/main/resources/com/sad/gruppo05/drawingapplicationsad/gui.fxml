@@ -1,34 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.control.MenuButton?>
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
-
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sad.gruppo05.drawingapplicationsad.Controller">
    <children>
       <ScrollPane layoutX="-1.0" prefHeight="400.0" prefWidth="600.0">
          <content>
-            <Canvas height="400.0" width="600.0" fx:id="canvas"/>
+            <Canvas fx:id="canvas" height="400.0" width="600.0" />
          </content>
       </ScrollPane>
       <VBox prefHeight="100.0" prefWidth="600.0">
          <children>
             <HBox prefHeight="100.0" prefWidth="600.0">
                <children>
-                  <MenuButton mnemonicParsing="false" text="Shapes">
-                    <items>
-                      <MenuItem mnemonicParsing="false" text="Line" onAction="#onSelectLine"/>
-                      <MenuItem mnemonicParsing="false" text="Rectangle" onAction="#onSelectRectangle" />
-                        <MenuItem mnemonicParsing="false" text="Ellipse" onAction="#onSelectEllipse"/>
-                    </items>
-                  </MenuButton>
+                  <Pane prefHeight="97.0" prefWidth="113.0">
+                     <children>
+                        <MenuButton layoutX="22.0" layoutY="36.0" mnemonicParsing="false" text="Shapes">
+                           <items>
+                              <MenuItem mnemonicParsing="false" onAction="#onSelectLine" text="Line" />
+                              <MenuItem mnemonicParsing="false" onAction="#onSelectRectangle" text="Rectangle" />
+                              <MenuItem mnemonicParsing="false" onAction="#onSelectEllipse" text="Ellipse" />
+                           </items>
+                        </MenuButton>
+                     </children>
+                  </Pane>
                   <Separator orientation="VERTICAL" prefHeight="200.0" />
+                  <Pane prefHeight="97.0" prefWidth="210.0">
+                     <children>
+                        <ColorPicker fx:id="borderColorPicker" layoutX="68.0" layoutY="14.0" prefHeight="25.0" prefWidth="100.0" />
+                        <ColorPicker fx:id="fillColorPicker" layoutX="68.0" layoutY="58.0" prefHeight="25.0" prefWidth="100.0" />
+                        <Label layoutX="14.0" layoutY="18.0" text="Border" />
+                        <Label layoutX="24.0" layoutY="62.0" text="Fill" />
+                     </children>
+                  </Pane>
+                  <Separator orientation="VERTICAL" prefHeight="97.0" prefWidth="4.0" />
                </children>
             </HBox>
             <Separator prefWidth="200.0" />

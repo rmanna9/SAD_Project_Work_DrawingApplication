@@ -12,17 +12,21 @@ public class Controller {
 
     @FXML
     private Canvas canvas;
+    @FXML
+    private ColorPicker borderColorPicker;
+    @FXML
+    private ColorPicker fillColorPicker;
     private ShapeFactory currentFactory;
     private Color borderColor = Color.BLACK;
     private Color fillColor = Color.TRANSPARENT;
 
     @FXML
     public void initialize() {
+        setupBorderColorPicker();
+        setupFillColorPicker();
         canvas.addEventHandler(MouseEvent.MOUSE_CLICKED, this::drawShape);
     }
-    /**
-     * Metodo chiamato quando viene selezionata "Linea" dal menu.
-     */
+
     @FXML
     private void onSelectLine() {
         currentFactory = new LineFactory();
@@ -37,6 +41,22 @@ public class Controller {
     private void onSelectEllipse() {
         currentFactory = new EllipseFactory();
         System.out.println("ellipse selezionata");
+    }
+    private void setupBorderColorPicker(){
+        borderColorPicker.setValue(borderColor);
+
+        borderColorPicker.setOnAction(event -> {
+            borderColor = borderColorPicker.getValue();
+            System.out.println("Border color selezionato: " + borderColor);
+        });
+    }
+    private void setupFillColorPicker(){
+        fillColorPicker.setValue(fillColor);
+
+        fillColorPicker.setOnAction(event -> {
+            fillColor = fillColorPicker.getValue();
+            System.out.println("Border color selezionato: " + fillColor);
+        });
     }
 
     private void drawShape(MouseEvent event) {
