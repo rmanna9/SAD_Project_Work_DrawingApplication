@@ -72,5 +72,10 @@ public class Controller {
         shape.draw(gc);
     }
 
+    @FXML
+    private void onSaveButtonClick(){
+        Command saveCommand = new SavePaintCommand(canvas);
+        saveCommand.execute();
+    }
 
 }
