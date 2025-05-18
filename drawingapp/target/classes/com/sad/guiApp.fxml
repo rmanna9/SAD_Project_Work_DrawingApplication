@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.MenuButton?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sad.Controller">
+   <children>
+      <VBox AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+         <children>
+            <HBox prefHeight="100.0" prefWidth="600.0">
+               <children>
+                  <Pane prefHeight="100.0" prefWidth="144.0">
+                     <children>
+                        <Separator layoutX="143.0" orientation="VERTICAL" prefHeight="100.0" prefWidth="4.0" />
+                        <Button layoutX="46.0" layoutY="19.0" mnemonicParsing="false" onAction="#onSaveButtonClick" text="Save" />
+                        <Button layoutX="46.0" layoutY="61.0" mnemonicParsing="false" onAction="#onLoadButtonClick" text="Load" />
+                     </children>
+                  </Pane>
+                  <Pane prefHeight="100.0" prefWidth="144.0">
+                     <children>
+                        <Separator layoutX="143.0" orientation="VERTICAL" prefHeight="100.0" prefWidth="4.0" />
+                        <MenuButton layoutX="37.0" layoutY="38.0" mnemonicParsing="false" text="Shapes">
+                          <items>
+                            <MenuItem mnemonicParsing="false" onAction="#onSelectLine" text="Line" />
+                            <MenuItem mnemonicParsing="false" onAction="#onSelectRectangle" text="Rectangle" />
+                              <MenuItem mnemonicParsing="false" onAction="#onSelectEllipse" text="Ellipse" />
+                          </items>
+                        </MenuButton>
+                     </children>
+                  </Pane>
+                  <Pane prefHeight="100.0" prefWidth="144.0">
+                     <children>
+                        <Separator layoutX="143.0" orientation="VERTICAL" prefHeight="100.0" prefWidth="4.0" />
+                        <ColorPicker fx:id="borderColorPicker" layoutX="50.0" layoutY="14.0" prefHeight="25.0" prefWidth="86.0" />
+                        <ColorPicker fx:id="fillColorPicker" layoutX="50.0" layoutY="56.0" prefHeight="25.0" prefWidth="86.0" />
+                        <Label layoutX="8.0" layoutY="18.0" text="Border" />
+                        <Label layoutX="19.0" layoutY="60.0" text="Fill" />
+                     </children>
+                  </Pane>
+               </children>
+            </HBox>
+            <Separator prefWidth="600.0" />
+         </children>
+      </VBox>
+      <Pane fx:id="root" layoutY="100.0" AnchorPane.bottomAnchor="0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="100" />
+   </children>
+</AnchorPane>
