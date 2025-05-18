@@ -1,8 +1,7 @@
 package com.sad.gruppo05.drawingapplicationsad.model;
 
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.Node;
 
 public interface Shape {
-    void draw(GraphicsContext gc);
-
+    Node createNode();
 }

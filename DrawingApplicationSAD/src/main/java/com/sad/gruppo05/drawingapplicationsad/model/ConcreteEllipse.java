@@ -1,7 +1,8 @@
 package com.sad.gruppo05.drawingapplicationsad.model;
 
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.Node;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Ellipse;
 
 public class ConcreteEllipse implements Shape {
     private final double x, y, width, height;
@@ -18,12 +19,21 @@ public class ConcreteEllipse implements Shape {
     }
 
     @Override
-    public void draw(GraphicsContext gc) {
-        gc.setFill(fillColor);
-        gc.setStroke(borderColor);
-        gc.fillOval(x, y, width, height);
-        gc.strokeOval(x, y, width, height);
+    public Node createNode() {
+        Ellipse ellipse = new Ellipse();
+        ellipse.setCenterX(x + width / 2);
+        ellipse.setCenterY(y + height / 2);
+        ellipse.setRadiusX(width / 2);
+        ellipse.setRadiusY(height / 2);
+        ellipse.setStroke(borderColor);
+        ellipse.setFill(fillColor);
+        return ellipse;
     }
 
-
+    public double getX() { return x; }
+    public double getY() { return y; }
+    public double getWidth() { return width; }
+    public double getHeight() { return height; }
+    public Color getBorderColor() { return borderColor; }
+    public Color getFillColor() { return fillColor; }
 }

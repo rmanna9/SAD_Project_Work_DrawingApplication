@@ -1,7 +1,8 @@
 package com.sad.gruppo05.drawingapplicationsad.model;
 
-import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.Node;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 
 public class ConcreteRectangle implements Shape {
     private final double x, y, width, height;
@@ -18,10 +19,17 @@ public class ConcreteRectangle implements Shape {
     }
 
     @Override
-    public void draw(GraphicsContext gc) {
-        gc.setFill(fillColor);
-        gc.setStroke(borderColor);
-        gc.fillRect(x, y, width, height);
-        gc.strokeRect(x, y, width, height);
+    public Node createNode() {
+        Rectangle rect = new Rectangle(x, y, width, height);
+        rect.setStroke(borderColor);
+        rect.setFill(fillColor);
+        return rect;
     }
+
+    public double getX() { return x; }
+    public double getY() { return y; }
+    public double getWidth() { return width; }
+    public double getHeight() { return height; }
+    public Color getBorderColor() { return borderColor; }
+    public Color getFillColor() { return fillColor; }
 }
