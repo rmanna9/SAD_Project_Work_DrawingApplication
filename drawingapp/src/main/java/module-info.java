@@ -1,5 +1,5 @@
 module com.sad {
-    requires javafx.graphics;
+    requires transitive javafx.graphics;
     requires javafx.controls;
     requires javafx.fxml;
 
