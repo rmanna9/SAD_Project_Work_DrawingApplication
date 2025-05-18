@@ -6,6 +6,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 
 public class Controller {
@@ -16,6 +17,8 @@ public class Controller {
     private ColorPicker borderColorPicker;
     @FXML
     private ColorPicker fillColorPicker;
+    @FXML
+    private AnchorPane root;
     private ShapeFactory currentFactory;
     private Color borderColor = Color.BLACK;
     private Color fillColor = Color.TRANSPARENT;
@@ -76,6 +79,11 @@ public class Controller {
     private void onSaveButtonClick(){
         Command saveCommand = new SavePaintCommand(canvas);
         saveCommand.execute();
+    }
+    @FXML
+    private void onLoadButtonClick() {
+        Command loadCommand = new LoadPaintCommand(canvas);
+        loadCommand.execute();
     }
 
 }
