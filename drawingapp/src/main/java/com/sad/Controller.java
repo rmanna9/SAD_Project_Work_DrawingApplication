@@ -7,6 +7,8 @@ import javafx.scene.paint.Color;
 import javafx.scene.Node;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.Pane;
+import javafx.scene.image.ImageView;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,12 +20,13 @@ public class Controller {
 
     private ShapeFactory currentFactory;
 
-    @FXML 
-    private Pane root;
-    @FXML
-    private ColorPicker borderColorPicker;
-    @FXML
-    private ColorPicker fillColorPicker;
+    @FXML private Pane root;
+    @FXML private ColorPicker borderColorPicker;
+    @FXML private ColorPicker fillColorPicker;
+    @FXML private ImageView lineImageView;
+    @FXML private ImageView rectangleImageView;
+    @FXML private ImageView ellipseImageView;
+
     private Color borderColor = Color.BLACK;
     private Color fillColor = Color.TRANSPARENT;
     private final List<ShapeInterface> shapes = new ArrayList<>();
@@ -36,21 +39,32 @@ public class Controller {
     }
 
     @FXML
-    private void onSelectLine(){
+    private void onSelectLine() {
         currentFactory = new LineFactory();
+        highlightSelected(lineImageView);
         System.out.println("Line selected");
     }
 
     @FXML
-    private void onSelectRectangle(){
+    private void onSelectRectangle() {
         currentFactory = new RectangleFactory();
+        highlightSelected(rectangleImageView);
         System.out.println("Rectangle selected");
     }
 
     @FXML
-    private void onSelectEllipse(){
+    private void onSelectEllipse() {
         currentFactory = new EllipseFactory();
+        highlightSelected(ellipseImageView);
         System.out.println("Ellipse selected");
+    }
+
+    private void highlightSelected(ImageView selected) {
+        lineImageView.setStyle("");
+        rectangleImageView.setStyle("");
+        ellipseImageView.setStyle("");
+
+        selected.setStyle("-fx-effect: dropshadow(three-pass-box, #00bfff, 10, 0, 0, 0);");
     }
 
     private void drawShape(MouseEvent event){
