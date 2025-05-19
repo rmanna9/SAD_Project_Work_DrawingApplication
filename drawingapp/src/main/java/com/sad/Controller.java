@@ -10,16 +10,11 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.Pane;
 import javafx.scene.image.ImageView;
 
-
-import java.util.ArrayList;
-import java.util.List;
-
 import com.sad.models.*;
 import com.sad.models.command.*;
 
 public class Controller {
 
-    private ShapeFactory currentFactory;
 
     @FXML private Pane root;
     @FXML private ColorPicker borderColorPicker;
@@ -30,13 +25,14 @@ public class Controller {
 
     private Color borderColor = Color.BLACK;
     private Color fillColor = Color.TRANSPARENT;
-    private final List<ShapeInterface> shapes = new ArrayList<>();
-
+    
+    private Model model;
 
     public void initialize() {
         setupBorderColorPicker();
         setupFillColorPicker();
         root.addEventHandler(MouseEvent.MOUSE_CLICKED, this::drawShape);
+        model = new Model();
 
         // Applica un clip per evitare che le forme escano dai limiti del Pane
         Rectangle clip = new Rectangle();
@@ -47,21 +43,21 @@ public class Controller {
 
     @FXML
     private void onSelectLine() {
-        currentFactory = new LineFactory();
+        model.setCurrentFactory(new LineFactory());
         highlightSelected(lineImageView);
         System.out.println("Line selected");
     }
 
     @FXML
     private void onSelectRectangle() {
-        currentFactory = new RectangleFactory();
+        model.setCurrentFactory(new RectangleFactory());
         highlightSelected(rectangleImageView);
         System.out.println("Rectangle selected");
     }
 
     @FXML
     private void onSelectEllipse() {
-        currentFactory = new EllipseFactory();
+        model.setCurrentFactory(new EllipseFactory());
         highlightSelected(ellipseImageView);
         System.out.println("Ellipse selected");
     }
@@ -75,15 +71,12 @@ public class Controller {
     }
 
     private void drawShape(MouseEvent event){
-        if(currentFactory != null) {
-            double x = event.getX();
-            double y = event.getY();
+        double x = event.getX();
+        double y = event.getY();
 
-            ShapeInterface shape = currentFactory.createShape(x, y, 0, 0, borderColor, fillColor);
-            Node node = shape.draw();
-            root.getChildren().add(node);
-            shapes.add(shape);
-        }
+        ShapeInterface shape = model.createShape(x, y, 0, 0, borderColor, fillColor);
+        Node node = shape.draw();
+        root.getChildren().add(node);
     }
     
     private void setupBorderColorPicker() {
@@ -104,13 +97,13 @@ public class Controller {
 
     @FXML
     private void onSaveButtonClick() {
-        CommandInterface saveCommand = new SaveCommand(shapes, root);
-        saveCommand.execute();
+        model.setCommand(new SaveCommand(model.getShapes(), root));
+        model.executeCommand();
     }
     @FXML
     private void onLoadButtonClick() {
-        CommandInterface loadCommand = new LoadCommand(shapes, root);
-        loadCommand.execute();
+        model.setCommand(new LoadCommand(model.getShapes(), root));
+        model.executeCommand();
     }
     
 }
