@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.ColorPicker?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
@@ -12,31 +13,31 @@
 
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="900.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sad.Controller">
    <children>
-      <VBox AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
+      <VBox layoutY="100.0" AnchorPane.leftAnchor="0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
          <children>
             <HBox>
                <children>
                   <Pane prefHeight="100.0" prefWidth="300.0">
                      <children>
                         <Separator layoutX="300.0" orientation="VERTICAL" prefHeight="100.0" prefWidth="4.0" />
-                        <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="62.0" layoutY="38.0" onMouseClicked="#onSaveButtonClick" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="91.0" layoutY="38.0" onMouseClicked="#onSaveButtonClick" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@images/saveIcon.png" />
                            </image>
                         </ImageView>
-                        <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="147.0" layoutY="38.0" onMouseClicked="#onLoadButtonClick" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="40.0" fitWidth="40.0" layoutX="176.0" layoutY="38.0" onMouseClicked="#onLoadButtonClick" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@images/load.png" />
                            </image>
                         </ImageView>
-                        <Label layoutX="70.0" layoutY="14.0" text="Save" />
-                        <Label layoutX="154.0" layoutY="14.0" text="Load" />
+                        <Label layoutX="96.0" layoutY="14.0" text="Save" />
+                        <Label layoutX="180.0" layoutY="14.0" text="Load" />
                      </children>
                   </Pane>
                   <Pane prefHeight="100.0" prefWidth="300.0">
                      <children>
                         <Separator layoutX="300.0" orientation="VERTICAL" prefHeight="100.0" prefWidth="4.0" />
-                        <ImageView fx:id="lineImageView" fitHeight="40.0" fitWidth="40.0" layoutX="31.0" layoutY="30.0" onMouseClicked="#onSelectLine" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="lineImageView" fitHeight="40.0" fitWidth="40.0" layoutX="52.0" layoutY="30.0" onMouseClicked="#onSelectLine" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@images/lineIcon.png" />
                            </image>
@@ -46,7 +47,7 @@
                               <Image url="@images/rectIcon.png" />
                            </image>
                         </ImageView>
-                        <ImageView fx:id="ellipseImageView" fitHeight="40.0" fitWidth="40.0" layoutX="200.0" layoutY="30.0" onMouseClicked="#onSelectEllipse" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="ellipseImageView" fitHeight="40.0" fitWidth="40.0" layoutX="186.0" layoutY="30.0" onMouseClicked="#onSelectEllipse" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@images/ellipse.png" />
                            </image>
@@ -56,14 +57,14 @@
                   </Pane>
                   <Pane prefHeight="100.0" prefWidth="300.0">
                      <children>
-                        <ColorPicker fx:id="borderColorPicker" layoutX="121.0" layoutY="14.0" prefHeight="25.0" prefWidth="86.0" />
-                        <ColorPicker fx:id="fillColorPicker" layoutX="121.0" layoutY="56.0" prefHeight="25.0" prefWidth="86.0" />
-                        <ImageView fitHeight="25.0" fitWidth="21.0" layoutX="76.0" layoutY="16.0" pickOnBounds="true" preserveRatio="true">
+                        <ColorPicker fx:id="borderColorPicker" layoutX="121.0" layoutY="14.0" prefHeight="32.0" prefWidth="108.0" />
+                        <ColorPicker fx:id="fillColorPicker" layoutX="121.0" layoutY="56.0" prefHeight="32.0" prefWidth="108.0" />
+                        <ImageView fitHeight="25.0" fitWidth="21.0" layoutX="76.0" layoutY="20.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@images/borderIcon.png" />
                            </image>
                         </ImageView>
-                        <ImageView fitHeight="25.0" fitWidth="21.0" layoutX="76.0" layoutY="58.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="25.0" fitWidth="21.0" layoutX="76.0" layoutY="62.0" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@images/fillIcon.png" />
                            </image>
@@ -75,6 +76,9 @@
             <Separator prefWidth="600.0" />
          </children>
       </VBox>
-      <Pane fx:id="root" layoutY="100.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="100.0" />
+      <Pane fx:id="root" prefHeight="500.0" prefWidth="900.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="101.0">
+         <padding>
+            <Insets top="100.0" />
+         </padding></Pane>
    </children>
 </AnchorPane>

@@ -4,6 +4,7 @@ package com.sad;
 import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.Node;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.Pane;
@@ -36,6 +37,12 @@ public class Controller {
         setupBorderColorPicker();
         setupFillColorPicker();
         root.addEventHandler(MouseEvent.MOUSE_CLICKED, this::drawShape);
+
+        // Applica un clip per evitare che le forme escano dai limiti del Pane
+        Rectangle clip = new Rectangle();
+        clip.widthProperty().bind(root.widthProperty());
+        clip.heightProperty().bind(root.heightProperty());
+        root.setClip(clip);
     }
 
     @FXML
