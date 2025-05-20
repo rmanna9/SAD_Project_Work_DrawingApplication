@@ -33,7 +33,7 @@ https://docs.google.com/spreadsheets/d/1OVbUHsX4_5SGcCfeSjGofEdefG_a5oUwiZAQzRz-
 - All public classes, methods, and important fields must be documented using Javadoc.
 
 ## Artifacts
-UML Class diagram: https://app.moqups.com/4HnUzCl99zSIB2HYa9ShIxbtWWcL9vhX/view/page/a8bfb0d3e?ui=0
+UML Class diagram: https://app.moqups.com/4HnUzCl99zSIB2HYa9ShIxbtWWcL9vhX/view/page/a8bfb0d3e?ui=0 \n
 BurndownChart: ![Screenshot](/Artifacts/BurndownChart.png)
 
 ## Docs
