@@ -47,7 +47,7 @@ public class SaveCommand implements CommandInterface {
         }
     }
 
-    private String serializeShape(ShapeInterface shape) {
+    public String serializeShape(ShapeInterface shape) {
         if (shape instanceof ConcreteRectangle) {
             ConcreteRectangle rectangle = (ConcreteRectangle) shape;
             return String.format("Rectangle %f %f %f %f %s %s",

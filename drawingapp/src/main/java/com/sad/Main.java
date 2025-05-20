@@ -11,22 +11,25 @@ import java.io.IOException;
 
 public class Main extends Application {
 
-    private static Scene scene;
 
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("guiApp"));
+        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("guiApp.fxml"));
+        Parent root = fxmlLoader.load();
+
+        Controller controller = fxmlLoader.getController(); // 🔥 ottieni il controller
+
+        Scene scene = new Scene(root);
+
+        // 🔥 Aggiungi l'ascoltatore per il tasto DELETE alla scena
+        scene.setOnKeyPressed(event -> {
+            if (event.getCode() == javafx.scene.input.KeyCode.DELETE) {
+                controller.clearPane(); // chiama il metodo nel controller
+            }
+        });
+
         stage.setScene(scene);
         stage.show();
-    }
-
-    static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
-    }
-
-    private static Parent loadFXML(String fxml) throws IOException {
-        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource(fxml + ".fxml"));
-        return fxmlLoader.load();
     }
 
     public static void main(String[] args) {

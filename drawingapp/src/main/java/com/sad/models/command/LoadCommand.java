@@ -48,7 +48,7 @@ public class LoadCommand implements CommandInterface {
         }
     }
 
-    private ShapeInterface deserializeShape(String line) {
+    public ShapeInterface deserializeShape(String line) {
         String[] parts = line.split(" ");
         String type = parts[0];
 

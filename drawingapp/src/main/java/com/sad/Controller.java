@@ -10,6 +10,7 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.Pane;
 import javafx.scene.image.ImageView;
 
+
 import com.sad.models.*;
 import com.sad.models.command.*;
 
@@ -28,19 +29,20 @@ public class Controller {
     
     private Model model;
 
+    
     public void initialize() {
-        setupBorderColorPicker();
-        setupFillColorPicker();
-        root.addEventHandler(MouseEvent.MOUSE_CLICKED, this::drawShape);
-        model = new Model();
+        setupColorPickers(); 
+        root.addEventHandler(MouseEvent.MOUSE_CLICKED, this::drawShape); // Add mouse click event handler
+        model = new Model(); // Initialize the model
 
-        // Applica un clip per evitare che le forme escano dai limiti del Pane
+        // Set up the clip for the root pane
         Rectangle clip = new Rectangle();
         clip.widthProperty().bind(root.widthProperty());
         clip.heightProperty().bind(root.heightProperty());
         root.setClip(clip);
     }
 
+    // Event handlers for Line selection
     @FXML
     private void onSelectLine() {
         model.setCurrentFactory(new LineFactory());
@@ -48,6 +50,7 @@ public class Controller {
         System.out.println("Line selected");
     }
 
+    // Event handlers for Rectangle selection
     @FXML
     private void onSelectRectangle() {
         model.setCurrentFactory(new RectangleFactory());
@@ -55,6 +58,7 @@ public class Controller {
         System.out.println("Rectangle selected");
     }
 
+    // Event handlers for Ellipse selection
     @FXML
     private void onSelectEllipse() {
         model.setCurrentFactory(new EllipseFactory());
@@ -62,6 +66,7 @@ public class Controller {
         System.out.println("Ellipse selected");
     }
 
+    // Manging the highlight of the selected shape 
     private void highlightSelected(ImageView selected) {
         lineImageView.setStyle("");
         rectangleImageView.setStyle("");
@@ -70,6 +75,7 @@ public class Controller {
         selected.setStyle("-fx-effect: dropshadow(three-pass-box, #00bfff, 10, 0, 0, 0);");
     }
 
+    // Draw the shape on mouse click, using the factory pattern
     private void drawShape(MouseEvent event){
         double x = event.getX();
         double y = event.getY();
@@ -79,22 +85,21 @@ public class Controller {
         root.getChildren().add(node);
     }
     
-    private void setupBorderColorPicker() {
-        borderColorPicker.setValue(borderColor);
-        borderColorPicker.setOnAction(event -> {
-            borderColor = borderColorPicker.getValue();
-            System.out.println("Colore bordo selezionato: " + borderColor);
-        });
-    }
+    // Set up the color pickers for border and fill colors
+    private void setupColorPickers() {
+    borderColorPicker.setValue(borderColor);
+    fillColorPicker.setValue(fillColor);
+    
+    borderColorPicker.setOnAction(event -> {
+        borderColor = borderColorPicker.getValue();
+    });
 
-    private void setupFillColorPicker() {
-        fillColorPicker.setValue(fillColor);
-        fillColorPicker.setOnAction(event -> {
-            fillColor = fillColorPicker.getValue();
-            System.out.println("Colore riempimento selezionato: " + fillColor);
-        });
-    }
+    fillColorPicker.setOnAction(event -> {
+        fillColor = fillColorPicker.getValue();
+    });
+}
 
+    // Event handlers for Save and Load buttons
     @FXML
     private void onSaveButtonClick() {
         model.setCommand(new SaveCommand(model.getShapes(), root));
@@ -106,4 +111,8 @@ public class Controller {
         model.executeCommand();
     }
     
+    public void clearPane() {
+    root.getChildren().clear();
+    }
+
 }

@@ -3,5 +3,5 @@ import javafx.scene.Node;
 
 
 public interface ShapeInterface {
-    Node draw();   
+    public Node draw();   
 }
