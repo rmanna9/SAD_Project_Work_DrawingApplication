@@ -1,6 +1,5 @@
 package com.sad;
 
-
 import javafx.fxml.FXML;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
@@ -10,12 +9,14 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.layout.Pane;
 import javafx.scene.image.ImageView;
 
-
 import com.sad.models.*;
 import com.sad.models.command.*;
 
+/**
+ * Controller class for the Drawing Application.
+ * Manages user interactions, shape selection, color picking, and drawing logic.
+ */
 public class Controller {
-
 
     @FXML private Pane root;
     @FXML private ColorPicker borderColorPicker;
@@ -29,7 +30,10 @@ public class Controller {
     
     private Model model;
 
-    
+    /**
+     * Initializes the controller.
+     * Sets up color pickers, mouse event handlers, and the drawing area clip.
+     */
     public void initialize() {
         setupColorPickers(); 
         root.addEventHandler(MouseEvent.MOUSE_CLICKED, this::drawShape); // Add mouse click event handler
@@ -42,7 +46,10 @@ public class Controller {
         root.setClip(clip);
     }
 
-    // Event handlers for Line selection
+    /**
+     * Handles the selection of the Line tool.
+     * Sets the current factory to LineFactory and highlights the selected icon.
+     */
     @FXML
     private void onSelectLine() {
         model.setCurrentFactory(new LineFactory());
@@ -50,7 +57,10 @@ public class Controller {
         System.out.println("Line selected");
     }
 
-    // Event handlers for Rectangle selection
+    /**
+     * Handles the selection of the Rectangle tool.
+     * Sets the current factory to RectangleFactory and highlights the selected icon.
+     */
     @FXML
     private void onSelectRectangle() {
         model.setCurrentFactory(new RectangleFactory());
@@ -58,7 +68,10 @@ public class Controller {
         System.out.println("Rectangle selected");
     }
 
-    // Event handlers for Ellipse selection
+    /**
+     * Handles the selection of the Ellipse tool.
+     * Sets the current factory to EllipseFactory and highlights the selected icon.
+     */
     @FXML
     private void onSelectEllipse() {
         model.setCurrentFactory(new EllipseFactory());
@@ -66,7 +79,10 @@ public class Controller {
         System.out.println("Ellipse selected");
     }
 
-    // Manging the highlight of the selected shape 
+    /**
+     * Highlights the selected shape icon and removes highlight from others.
+     * @param selected The ImageView to highlight.
+     */
     private void highlightSelected(ImageView selected) {
         lineImageView.setStyle("");
         rectangleImageView.setStyle("");
@@ -75,7 +91,10 @@ public class Controller {
         selected.setStyle("-fx-effect: dropshadow(three-pass-box, #00bfff, 10, 0, 0, 0);");
     }
 
-    // Draw the shape on mouse click, using the factory pattern
+    /**
+     * Draws a shape at the mouse click position using the current factory and colors.
+     * @param event MouseEvent containing the click coordinates.
+     */
     private void drawShape(MouseEvent event){
         double x = event.getX();
         double y = event.getY();
@@ -85,34 +104,48 @@ public class Controller {
         root.getChildren().add(node);
     }
     
-    // Set up the color pickers for border and fill colors
+    /**
+     * Sets up the color pickers for border and fill colors.
+     * Updates the controller's color fields on user selection.
+     */
     private void setupColorPickers() {
-    borderColorPicker.setValue(borderColor);
-    fillColorPicker.setValue(fillColor);
-    
-    borderColorPicker.setOnAction(event -> {
-        borderColor = borderColorPicker.getValue();
-    });
+        borderColorPicker.setValue(borderColor);
+        fillColorPicker.setValue(fillColor);
+        
+        borderColorPicker.setOnAction(event -> {
+            borderColor = borderColorPicker.getValue();
+        });
 
-    fillColorPicker.setOnAction(event -> {
-        fillColor = fillColorPicker.getValue();
-    });
-}
+        fillColorPicker.setOnAction(event -> {
+            fillColor = fillColorPicker.getValue();
+        });
+    }
 
-    // Event handlers for Save and Load buttons
+    /**
+     * Handles the Save button click event.
+     * Executes the SaveCommand to persist the current shapes.
+     */
     @FXML
     private void onSaveButtonClick() {
         model.setCommand(new SaveCommand(model.getShapes(), root));
         model.executeCommand();
     }
+
+    /**
+     * Handles the Load button click event.
+     * Executes the LoadCommand to load shapes into the pane.
+     */
     @FXML
     private void onLoadButtonClick() {
         model.setCommand(new LoadCommand(model.getShapes(), root));
         model.executeCommand();
     }
     
+    /**
+     * Clears all shapes from the drawing pane.
+     */
     public void clearPane() {
-    root.getChildren().clear();
+        root.getChildren().clear();
     }
 
 }
