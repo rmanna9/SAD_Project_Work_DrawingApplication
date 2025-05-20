@@ -8,15 +8,28 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.sad.models.*;
 
+/**
+ * Unit test class for EllipseFactory.
+ * Verifies that the factory correctly creates ConcreteEllipse objects
+ * with the expected properties and that the draw method returns a valid JavaFX Ellipse node.
+ */
 public class EllipseFactoryTest {
 
     private EllipseFactory factory;
 
+    /**
+     * Sets up a new EllipseFactory instance before each test.
+     */
     @BeforeEach
     public void setup() {
         factory = new EllipseFactory();
     }
 
+    /**
+     * Tests the creation of a ConcreteEllipse using the factory.
+     * Asserts that the created shape is not null, is an Ellipse,
+     * and that its properties match the expected default and provided values.
+     */
     @Test
     public void testEllipseCreation() {
         ShapeInterface shape = factory.createShape(50, 60, 0, 0, Color.GREEN, Color.YELLOW);
