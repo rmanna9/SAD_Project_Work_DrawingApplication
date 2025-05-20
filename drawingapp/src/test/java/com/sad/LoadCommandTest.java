@@ -14,8 +14,16 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit test class for LoadCommand.
+ * Verifies the correct deserialization of shapes from string representations.
+ */
 public class LoadCommandTest {
 
+    /**
+     * Tests deserialization of a rectangle from a string.
+     * Asserts that the resulting object is a ConcreteRectangle and its properties match the expected values.
+     */
     @Test
     public void testDeserializeRectangle() {
         String line = "Rectangle 10,000000 20,000000 100,000000 50,000000 #000000 #FF0000";
@@ -32,6 +40,10 @@ public class LoadCommandTest {
         assertEquals(Color.web("#FF0000"), rect.getFillColor());
     }
 
+    /**
+     * Tests deserialization of an ellipse from a string.
+     * Asserts that the resulting object is a ConcreteEllipse and its properties match the expected values.
+     */
     @Test
     public void testDeserializeEllipse() {
         String line = "Ellipse 15,000000 25,000000 60,000000 40,000000 #0000FF transparent";
@@ -48,6 +60,10 @@ public class LoadCommandTest {
         assertEquals(Color.TRANSPARENT, ellipse.getFillColor());
     }
 
+    /**
+     * Tests deserialization of a line from a string.
+     * Asserts that the resulting object is a ConcreteLine and its properties match the expected values.
+     */
     @Test
     public void testDeserializeLine() {
         String line = "Line 5,000000 5,000000 100,000000 100,000000 #008000";

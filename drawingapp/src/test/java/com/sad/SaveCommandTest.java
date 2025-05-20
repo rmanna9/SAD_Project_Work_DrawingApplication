@@ -11,8 +11,16 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit test class for SaveCommand.
+ * Verifies the correct serialization of shapes to string representations.
+ */
 public class SaveCommandTest {
 
+    /**
+     * Tests serialization of a ConcreteRectangle.
+     * Asserts that the resulting string matches the expected format and values.
+     */
     @Test
     public void testSerializeRectangle() {
         ConcreteRectangle rect = new ConcreteRectangle(10, 20, 100, 50, Color.BLACK, Color.RED);
@@ -21,6 +29,10 @@ public class SaveCommandTest {
         assertEquals("Rectangle 10,000000 20,000000 100,000000 50,000000 #000000 #FF0000", result);
     }
 
+    /**
+     * Tests serialization of a ConcreteEllipse.
+     * Asserts that the resulting string matches the expected format and values.
+     */
     @Test
     public void testSerializeEllipse() {
         ConcreteEllipse ellipse = new ConcreteEllipse(15, 25, 60, 40, Color.BLUE, Color.TRANSPARENT);
@@ -29,6 +41,10 @@ public class SaveCommandTest {
         assertEquals("Ellipse 15,000000 25,000000 60,000000 40,000000 #0000FF transparent", result);
     }
 
+    /**
+     * Tests serialization of a ConcreteLine.
+     * Asserts that the resulting string matches the expected format and values.
+     */
     @Test
     public void testSerializeLine() {
         ConcreteLine line = new ConcreteLine(5, 5, 100, 100, Color.GREEN);
