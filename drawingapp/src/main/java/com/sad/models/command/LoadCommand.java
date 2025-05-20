@@ -11,15 +11,29 @@ import java.io.File;
 import java.io.FileReader;
 import java.util.List;
 
+/**
+ * Command to load shapes from a text file and display them on the drawing pane.
+ * Implements the CommandInterface.
+ */
 public class LoadCommand implements CommandInterface {
     private final List<ShapeInterface> shapes;
     private final Pane pane;
 
+    /**
+     * Constructs a LoadCommand.
+     * @param shapes The list where loaded shapes will be stored.
+     * @param pane The pane where shapes will be drawn.
+     */
     public LoadCommand(List<ShapeInterface> shapes, Pane pane) {
         this.shapes = shapes;
         this.pane = pane;
     }
 
+    /**
+     * Executes the load operation.
+     * Opens a file chooser, reads shapes from the selected file, deserializes them,
+     * adds them to the shapes list, and draws them on the pane.
+     */
     @Override
     public void execute() {
         FileChooser fileChooser = new FileChooser();
@@ -48,6 +62,11 @@ public class LoadCommand implements CommandInterface {
         }
     }
 
+    /**
+     * Deserializes a shape from a string line.
+     * @param line The string representing the shape.
+     * @return The deserialized ShapeInterface object, or null if parsing fails.
+     */
     public ShapeInterface deserializeShape(String line) {
         String[] parts = line.split(" ");
         String type = parts[0];
@@ -89,6 +108,11 @@ public class LoadCommand implements CommandInterface {
         }
     }
 
+    /**
+     * Converts a string to a JavaFX Color object.
+     * @param str The string representing the color.
+     * @return The corresponding Color object.
+     */
     private Color stringToColor(String str) {
         if (str.equalsIgnoreCase("transparent")) {
             return Color.TRANSPARENT;

@@ -13,18 +13,28 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
 
-
-
+/**
+ * Command to save shapes to a text file from the drawing pane.
+ * Implements the CommandInterface.
+ */
 public class SaveCommand implements CommandInterface {
     private final List<ShapeInterface> shapes;
     private final Pane pane;
 
+    /**
+     * Constructs a SaveCommand.
+     * @param shapes The list of shapes to be saved.
+     * @param pane The pane associated with the drawing area.
+     */
     public SaveCommand(List<ShapeInterface> shapes, Pane pane) {
         this.shapes = shapes;
         this.pane = pane;
     }
 
-
+    /**
+     * Executes the save operation.
+     * Opens a file chooser, serializes all shapes, and writes them to the selected file.
+     */
     @Override
     public void execute() {
         FileChooser fileChooser = new FileChooser();
@@ -47,6 +57,11 @@ public class SaveCommand implements CommandInterface {
         }
     }
 
+    /**
+     * Serializes a shape into a string representation.
+     * @param shape The shape to serialize.
+     * @return The string representation of the shape, or null if the shape type is unsupported.
+     */
     public String serializeShape(ShapeInterface shape) {
         if (shape instanceof ConcreteRectangle) {
             ConcreteRectangle rectangle = (ConcreteRectangle) shape;
@@ -71,18 +86,20 @@ public class SaveCommand implements CommandInterface {
         } else {
             return null;
         }
-      
     }
 
+    /**
+     * Converts a JavaFX Color object to a string representation.
+     * @param color The color to convert.
+     * @return The string representation of the color (hex or "transparent").
+     */
     private String colorToString(Color color) {
-    if (color.getOpacity() == 0.0) {
-        return "transparent";
+        if (color.getOpacity() == 0.0) {
+            return "transparent";
+        }
+        return String.format("#%02X%02X%02X",
+                (int) (color.getRed() * 255),
+                (int) (color.getGreen() * 255),
+                (int) (color.getBlue() * 255));
     }
-    return String.format("#%02X%02X%02X",
-            (int) (color.getRed() * 255),
-            (int) (color.getGreen() * 255),
-            (int) (color.getBlue() * 255));
-}
-
-
 }
