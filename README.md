@@ -4,7 +4,7 @@ Develop an application implementing a geometric drawing program
 ## Link to Trello board
 https://trello.com/b/Gcg5CR7I/project-work
 
-## Link to Product Backlog sheet
+## Link to Product Backlog and Sprint info sheet
 https://docs.google.com/spreadsheets/d/1OVbUHsX4_5SGcCfeSjGofEdefG_a5oUwiZAQzRz-qbc/edit?gid=422386935#gid=422386935
 
 ## Definition of Done
@@ -31,6 +31,10 @@ https://docs.google.com/spreadsheets/d/1OVbUHsX4_5SGcCfeSjGofEdefG_a5oUwiZAQzRz-
 - CamelCase for naming conventions 
 - All code elements, including variable names, method names, class names, comments, and documentation, must be written in English.
 - All public classes, methods, and important fields must be documented using Javadoc.
+
+## Artifacts
+UML Class diagram: 
+Burndown chart: 
 
 ## Docs
 Pre Game and 1st Sprint Planning: https://docs.google.com/document/d/1Ly_wDIKy5ngb3NId6tFzA2WSrdePUeEU/edit
