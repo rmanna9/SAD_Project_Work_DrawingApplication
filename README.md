@@ -34,7 +34,7 @@ https://docs.google.com/spreadsheets/d/1OVbUHsX4_5SGcCfeSjGofEdefG_a5oUwiZAQzRz-
 
 ## Artifacts
 UML Class diagram: https://app.moqups.com/4HnUzCl99zSIB2HYa9ShIxbtWWcL9vhX/view/page/a8bfb0d3e?ui=0
-Burndown chart: /Artifacts/BurndownChart.png
+BurndownChart: ![Screenshot](/Artifacts/BurndownChart.png)
 
 ## Docs
 Pre Game and 1st Sprint Planning: https://docs.google.com/document/d/1Ly_wDIKy5ngb3NId6tFzA2WSrdePUeEU/edit
