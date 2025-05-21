@@ -39,4 +39,5 @@ https://docs.google.com/spreadsheets/d/1OVbUHsX4_5SGcCfeSjGofEdefG_a5oUwiZAQzRz-
 <img src="/Artifacts/BurndownChart.png" alt="Screenshot" width="500"/>
 
 ## Docs
-Pre Game and 1st Sprint Planning: https://docs.google.com/document/d/1Ly_wDIKy5ngb3NId6tFzA2WSrdePUeEU/edit
+- Pre Game and 1st Sprint Planning: https://docs.google.com/document/d/1Ly_wDIKy5ngb3NId6tFzA2WSrdePUeEU/edit
+- 1st Sprint report: https://docs.google.com/document/d/1NEP5HXoX84F_--4b9dSBPjNDBBf5Y2pP8neZdkQbSY4/edit?tab=t.0#heading=h.a7kpj5u6gwwy
