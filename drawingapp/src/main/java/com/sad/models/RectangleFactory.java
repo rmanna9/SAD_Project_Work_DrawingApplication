@@ -6,7 +6,9 @@ import javafx.scene.paint.Color;
  * Provides a method to instantiate rectangles with default width and height.
  */
 public class RectangleFactory extends ShapeFactory {
+    /** The default width for created rectangles. */
     private final double defaultWidth = 100;
+    /** The default height for created rectangles. */
     private final double defaultHeight = 50; 
 
     /**

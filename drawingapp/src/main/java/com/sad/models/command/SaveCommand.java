@@ -1,34 +1,21 @@
 package com.sad.models.command;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.util.List;
-
-import com.sad.models.ConcreteEllipse;
-import com.sad.models.ConcreteLine;
-import com.sad.models.ConcreteRectangle;
-import com.sad.models.ShapeInterface;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
-import javafx.stage.FileChooser;
+import com.sad.models.Model;
 
 /**
  * Command to save shapes to a text file from the drawing pane.
  * Implements the CommandInterface.
  */
 public class SaveCommand implements CommandInterface {
-    private final List<ShapeInterface> shapes;
-    private final Pane pane;
+    /** The model that acts as the receiver of the command. */
+    private final Model receiver;
 
     /**
      * Constructs a SaveCommand.
-     * @param shapes The list of shapes to be saved.
-     * @param pane The pane associated with the drawing area.
+     * @param receiver the model that will execute the save operation
      */
-    public SaveCommand(List<ShapeInterface> shapes, Pane pane) {
-        this.shapes = shapes;
-        this.pane = pane;
+    public SaveCommand(Model receiver) {
+        this.receiver = receiver;
     }
 
     /**
@@ -37,69 +24,15 @@ public class SaveCommand implements CommandInterface {
      */
     @Override
     public void execute() {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Save Shapes");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text files", "*.txt"));
-        File file = fileChooser.showSaveDialog(pane.getScene().getWindow());
-
-        if (file != null) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                for (ShapeInterface shape : shapes) {
-                    String line = serializeShape(shape);
-                    if (line != null) {
-                        writer.write(line);
-                        writer.newLine();
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
+        receiver.save();
     }
 
     /**
-     * Serializes a shape into a string representation.
-     * @param shape The shape to serialize.
-     * @return The string representation of the shape, or null if the shape type is unsupported.
+     * Undoes the save command.
+     * No revert action is implemented for the save command.
      */
-    public String serializeShape(ShapeInterface shape) {
-        if (shape instanceof ConcreteRectangle) {
-            ConcreteRectangle rectangle = (ConcreteRectangle) shape;
-            return String.format("Rectangle %f %f %f %f %s %s",
-                    rectangle.getX(), rectangle.getY(),
-                    rectangle.getWidth(), rectangle.getHeight(),
-                    colorToString(rectangle.getBorderColor()),
-                    colorToString(rectangle.getFillColor()));
-        } else if (shape instanceof ConcreteEllipse) {
-            ConcreteEllipse ellipse = (ConcreteEllipse) shape;
-            return String.format("Ellipse %f %f %f %f %s %s",
-                    ellipse.getX(), ellipse.getY(),
-                    ellipse.getWidth(), ellipse.getHeight(),
-                    colorToString(ellipse.getBorderColor()),
-                    colorToString(ellipse.getFillColor()));
-        } else if (shape instanceof ConcreteLine){
-            ConcreteLine line = (ConcreteLine) shape;
-            return String.format("Line %f %f %f %f %s",
-                    line.getX1(), line.getY1(),
-                    line.getX2(), line.getY2(),
-                    colorToString(line.getBorderColor()));
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Converts a JavaFX Color object to a string representation.
-     * @param color The color to convert.
-     * @return The string representation of the color (hex or "transparent").
-     */
-    private String colorToString(Color color) {
-        if (color.getOpacity() == 0.0) {
-            return "transparent";
-        }
-        return String.format("#%02X%02X%02X",
-                (int) (color.getRed() * 255),
-                (int) (color.getGreen() * 255),
-                (int) (color.getBlue() * 255));
+    @Override
+    public void undo() {
+        // No revert action for save command
     }
 }

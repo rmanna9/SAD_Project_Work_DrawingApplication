@@ -6,7 +6,9 @@ import javafx.scene.paint.Color;
  * Provides a method to instantiate ellipses with default width and height.
  */
 public class EllipseFactory extends ShapeFactory {
+    /** The default width for created ellipses. */
     private final double defaultWidth = 100;
+    /** The default height for created ellipses. */
     private final double defaultHeight = 50;
 
     /**

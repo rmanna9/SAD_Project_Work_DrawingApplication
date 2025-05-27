@@ -13,7 +13,6 @@ import java.io.IOException;
  * Launches the JavaFX application, loads the GUI from FXML, and sets up the main stage.
  */
 public class Main extends Application {
-
     /**
      * Starts the JavaFX application.
      * Loads the FXML layout, retrieves the controller, sets up the scene,
@@ -27,16 +26,7 @@ public class Main extends Application {
         FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("guiApp.fxml"));
         Parent root = fxmlLoader.load();
 
-        Controller controller = fxmlLoader.getController();
-
         Scene scene = new Scene(root);
-
-        // Add a key listener for the DELETE key to clear the drawing pane
-        scene.setOnKeyPressed(event -> {
-            if (event.getCode() == javafx.scene.input.KeyCode.DELETE) {
-                controller.clearPane();
-            }
-        });
 
         stage.setScene(scene);
         stage.show();

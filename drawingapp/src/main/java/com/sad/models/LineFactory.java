@@ -6,6 +6,7 @@ import javafx.scene.paint.Color;
  * Provides a method to instantiate lines with a default length.
  */
 public class LineFactory extends ShapeFactory{
+    /** The default length (width) for created lines. */
     private final double defaultWidth = 100;
 
     /**
