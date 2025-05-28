@@ -71,7 +71,7 @@ public class Controller {
     /** Current grid spacing. */
     private double gridSpacing = 20; 
     /** Available grid spacing levels. */
-    private final double[] GRID_LEVELS = {10, 20, 40, 80};
+    private final double[] GRID_LEVELS = {20, 40, 80};
     /** Index of the current grid spacing level. */
     private int currentGridLevelIndex = 1; 
 
@@ -109,6 +109,10 @@ public class Controller {
             double scale = newVal.doubleValue();
             scaleTransform.setX(scale);
             scaleTransform.setY(scale);
+
+            if (gridCanvas.isVisible()) {
+                drawGrid(gridCanvas, gridSpacing);
+            }
         });
 
         // Snap slider to steps of 0.5
@@ -187,20 +191,28 @@ public class Controller {
      * @param canvas The canvas to draw the grid on.
      * @param spacing The spacing between grid lines.
      */
-    private void drawGrid(Canvas canvas, double spacing) {
-        gridSpacing = spacing;
+    private void drawGrid(Canvas canvas, double baseSpacing) {
+        gridSpacing = baseSpacing;
         GraphicsContext gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
-        gc.setStroke(Color.LIGHTGRAY);
-        gc.setLineWidth(0.5);
+        double scale = scaleTransform.getX(); 
 
-        for (double x = 0; x < canvas.getWidth(); x += spacing) {
-            gc.strokeLine(x, 0, x, canvas.getHeight());
+        double adjustedSpacing = baseSpacing * scale;
+
+        if (adjustedSpacing < 4) return; 
+
+        gc.setStroke(Color.GRAY);
+        gc.setLineWidth(1);
+        gc.setLineDashes(null);
+
+        for (double x = 0; x < canvas.getWidth(); x += adjustedSpacing) {
+            double px = Math.round(x) + 0.5;  
+            gc.strokeLine(px, 0, px, canvas.getHeight());
         }
-
-        for (double y = 0; y < canvas.getHeight(); y += spacing) {
-            gc.strokeLine(0, y, canvas.getWidth(), y);
+        for (double y = 0; y < canvas.getHeight(); y += adjustedSpacing) {
+            double py = Math.round(y) + 0.5;
+            gc.strokeLine(0, py, canvas.getWidth(), py);
         }
     }
 
@@ -233,7 +245,7 @@ public class Controller {
      * @param event The mouse event.
      */
     private void shapeSelection(MouseEvent event) {
-        contextMenu.hide(); // Hide context menu if it is open
+        contextMenu.hide(); 
         Object target = event.getTarget();
         
         if (target instanceof Shape) {
@@ -623,5 +635,6 @@ public class Controller {
         if(commandStack.isEmpty()) { return; }
         CommandInterface command = commandStack.pop();
         command.undo();
+        ensureGridIsAtBack();
     }
 }
