@@ -33,7 +33,7 @@ https://docs.google.com/spreadsheets/d/1OVbUHsX4_5SGcCfeSjGofEdefG_a5oUwiZAQzRz-
 - All public classes, methods, and important fields must be documented using Javadoc.
 
 ## Artifacts
-<img src="/Artifacts/classdiagram.png" alt="classDiagra" width="500">
+<img src="/Artifacts/classdigram.svg" alt="classDiagra" width="500">
 
 <br>
 
