@@ -111,10 +111,10 @@ public class SelectingState implements StateInterface {
                     item.setDisable(model.getClipBoardShape() == null);
                     break;
                 case "Bring to Front":
-                    item.setDisable(model.isOnTheFront());
+                    item.setDisable(model.isOnTheFront() || !isTargetSelectedShape);
                     break;
                 case "Send to Back":
-                    item.setDisable(model.isOnTheBack());
+                    item.setDisable(model.isOnTheBack() || !isTargetSelectedShape);
                     break;
             }
         }
