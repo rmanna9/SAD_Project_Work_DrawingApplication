@@ -44,3 +44,5 @@ https://docs.google.com/spreadsheets/d/1OVbUHsX4_5SGcCfeSjGofEdefG_a5oUwiZAQzRz-
 - 1st Sprint report: https://docs.google.com/document/d/1NEP5HXoX84F_--4b9dSBPjNDBBf5Y2pP8neZdkQbSY4/edit?usp=drive_link
 - 2nd Sprint planning: https://docs.google.com/document/d/1dB96OCf7Fo8_hpmPcvOacFhxixI06xDhAimFrgD2EGY/edit?tab=t.0
 - 2nd Sprint report: https://docs.google.com/document/d/12M1o4T6USwhg1WrPJqsni0m_qXr7Tm9HYfXKs_rUqwQ/edit?tab=t.0
+- 3rd Sprint planning: https://docs.google.com/document/d/1JsXHfhu326SEIpjvH5GYUNJXnX8a8gCk7XKaD1oDGrM/edit?tab=t.0
+- 3rd Sprint report: https://docs.google.com/document/d/1KMgl3kVI_p-U-CI_emaPM0c4gxVlmmTsLpfgDzMhq10/edit?tab=t.0
