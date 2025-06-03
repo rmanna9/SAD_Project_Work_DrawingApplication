@@ -28,7 +28,12 @@ public class Main extends Application {
 
         Scene scene = new Scene(root);
 
+        Controller controller = fxmlLoader.getController();
+        controller.attachKeyHandlerToScene(scene);
+
         stage.setScene(scene);
+        stage.setMinHeight(725);
+        stage.setMinWidth(1290);
         stage.show();
     }
 

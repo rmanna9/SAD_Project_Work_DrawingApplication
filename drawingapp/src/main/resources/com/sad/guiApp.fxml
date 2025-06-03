@@ -2,8 +2,11 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Group?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ColorPicker?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.ContextMenu?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
@@ -18,8 +21,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="725.0" prefWidth="1190.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sad.Controller">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="725.0" prefWidth="1290.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.sad.Controller">
    <children>
       <VBox layoutX="-10.0" layoutY="100.0" prefHeight="151.0" prefWidth="1190.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0" AnchorPane.topAnchor="0">
          <children>
@@ -35,45 +39,62 @@
             </MenuBar>
             <HBox prefHeight="114.0" prefWidth="1188.0">
                <children>
-                  <Pane prefHeight="88.0" prefWidth="180.0">
+                  <Pane prefHeight="114.0" prefWidth="209.0">
                      <children>
-                        <ImageView fx:id="selectImageView" fitHeight="40.0" fitWidth="31.0" layoutX="83.0" layoutY="35.0" onMouseClicked="#onSelectButtonClick" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="selectImageView" fitHeight="40.0" fitWidth="31.0" layoutX="40.0" layoutY="45.0" onMouseClicked="#onSelectButtonClick" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@images/selectArrow.png" />
                            </image>
                         </ImageView>
-                        <ImageView fx:id="undoImageView" fitHeight="40.0" fitWidth="31.0" layoutX="131.0" layoutY="35.0" onMouseClicked="#onUndoButtonClick" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="undoImageView" fitHeight="40.0" fitWidth="31.0" layoutX="92.0" layoutY="45.0" onMouseClicked="#onUndoButtonClick" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@images/undo.png" />
                            </image>
                         </ImageView>
-                        <Separator layoutX="176.0" layoutY="16.0" orientation="VERTICAL" prefHeight="100.0" prefWidth="6.0" />
-                        <Label layoutX="74.0" layoutY="14.0" text="Select" />
-                        <Label layoutX="127.0" layoutY="14.0" text="Undo" />
+                        <Label layoutX="31.0" layoutY="14.0" text="Select">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></Label>
+                        <Label layoutX="89.0" layoutY="14.0" text="Undo">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></Label>
+                        <Separator layoutX="146.0" orientation="VERTICAL" prefHeight="114.0" prefWidth="2.0" />
                      </children>
                   </Pane>
-                  <Pane prefHeight="100.0" prefWidth="300.0">
+                  <Pane prefHeight="114.0" prefWidth="340.0">
                      <children>
-                        <Separator layoutX="300.0" orientation="VERTICAL" prefHeight="114.0" prefWidth="6.0" />
-                        <ImageView fx:id="lineImageView" fitHeight="40.0" fitWidth="40.0" layoutX="52.0" layoutY="30.0" onMouseClicked="#onSelectLine" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="lineImageView" fitHeight="40.0" fitWidth="40.0" layoutX="14.0" onMouseClicked="#onSelectLine" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@images/lineIcon.png" />
                            </image>
                         </ImageView>
-                        <ImageView fx:id="rectangleImageView" fitHeight="40.0" fitWidth="40.0" layoutX="120.0" layoutY="30.0" onMouseClicked="#onSelectRectangle" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="rectangleImageView" fitHeight="40.0" fitWidth="40.0" layoutX="82.0" onMouseClicked="#onSelectRectangle" pickOnBounds="true" preserveRatio="true">
                            <image>
-                              <Image url="@images/rectIcon.png" />
+                              <Image url="@images/rect.png" />
                            </image>
                         </ImageView>
-                        <ImageView fx:id="ellipseImageView" fitHeight="40.0" fitWidth="40.0" layoutX="186.0" layoutY="30.0" onMouseClicked="#onSelectEllipse" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="ellipseImageView" fitHeight="40.0" fitWidth="40.0" layoutX="154.0" onMouseClicked="#onSelectEllipse" pickOnBounds="true" preserveRatio="true">
                            <image>
                               <Image url="@images/ellipse.png" />
                            </image>
                         </ImageView>
-                        <Label layoutX="5.0" layoutY="2.0" text="Shapes" />
+                        <ImageView fx:id="polygonImageView" fitHeight="40.0" fitWidth="40.0" layoutX="9.0" layoutY="38.0" onMouseClicked="#onSelectPolygon" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/polygon.png" />
+                           </image>
+                        </ImageView>
+                        <ImageView fx:id="textImageView" fitHeight="31.0" fitWidth="31.0" layoutX="58.0" layoutY="60.0" onMouseClicked="#onSelectText" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@images/text.png" />
+                           </image>
+                        </ImageView>
+                        <TextField fx:id="textInput" layoutX="95.0" layoutY="63.0" onAction="#onTextInputButtonClick" prefHeight="25.0" prefWidth="96.0" />
+                        <Separator layoutX="277.0" orientation="VERTICAL" prefHeight="114.0" />
+                        <ComboBox fx:id="fontSizeMenu" layoutX="197.0" layoutY="63.0" prefHeight="31.0" prefWidth="74.0" promptText="Aa" />
                      </children>
                   </Pane>
-                  <Pane prefHeight="100.0" prefWidth="211.0">
+                  <Pane prefHeight="114.0" prefWidth="261.0">
                      <children>
                         <ColorPicker fx:id="borderColorPicker" layoutX="63.0" layoutY="14.0" prefHeight="32.0" prefWidth="108.0" />
                         <ColorPicker fx:id="fillColorPicker" layoutX="63.0" layoutY="56.0" prefHeight="32.0" prefWidth="108.0" />
@@ -87,20 +108,50 @@
                               <Image url="@images/fillIcon.png" />
                            </image>
                         </ImageView>
-                        <Separator layoutX="205.0" layoutY="6.0" orientation="VERTICAL" prefHeight="114.0" prefWidth="6.0" />
+                        <Separator layoutX="200.0" orientation="VERTICAL" prefHeight="114.0" />
                      </children>
                   </Pane>
-                  <Pane prefHeight="96.0" prefWidth="194.0">
+                  <Pane prefHeight="114.0" prefWidth="440.0">
                      <children>
                         <TextField fx:id="resizeTextField" layoutX="59.0" layoutY="14.0" onAction="#onResizeButtonClick" prefHeight="31.0" prefWidth="84.0" />
-                        <Label layoutX="6.0" layoutY="19.0" text="Resize :" />
-                        <Separator layoutX="189.0" orientation="VERTICAL" prefHeight="114.0" prefWidth="6.0" />
+                        <Label layoutX="14.0" layoutY="20.0" text="Resize :">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <TextField fx:id="stretchXTextField" layoutX="167.0" layoutY="25.0" onAction="#onStretchXButtonClick" prefHeight="31.0" prefWidth="84.0" />
+                        <TextField fx:id="stretchYTextField" layoutX="276.0" layoutY="25.0" onAction="#onStretchYButtonClick" prefHeight="31.0" prefWidth="84.0" />
+                        <Label layoutX="183.0" layoutY="6.0" text="Stretch X">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="293.0" layoutY="7.0" text="Stretch Y">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <Button layoutX="183.0" layoutY="66.0" mnemonicParsing="false" onAction="#mirrorXShape" text="Mirror X" />
+                        <Button layoutX="292.0" layoutY="66.0" mnemonicParsing="false" onAction="#mirrorYShape" text="Mirror Y" />
+                        <TextField fx:id="angleTextField" layoutX="59.0" layoutY="54.0" onAction="#onRotateButtonClick" prefHeight="31.0" prefWidth="84.0" />
+                        <Label layoutX="15.0" layoutY="61.0" text="Angle :">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font>
+                        </Label>
+                        <Separator layoutX="376.0" layoutY="-1.0" orientation="VERTICAL" prefHeight="114.0" />
                      </children>
                   </Pane>
-                  <Pane prefHeight="96.0" prefWidth="308.0">
+                  <Pane prefHeight="114.0" prefWidth="320.0">
                      <children>
-                        <CheckBox fx:id="gridCheckBox" layoutX="7.0" layoutY="14.0" mnemonicParsing="false" text="Grid" />
-                        <Label layoutX="11.0" layoutY="74.0" text="Zoom: " />
+                        <CheckBox fx:id="gridCheckBox" layoutX="7.0" layoutY="14.0" mnemonicParsing="false" text="Grid">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></CheckBox>
+                        <Label layoutX="11.0" layoutY="74.0" text="Zoom: ">
+                           <font>
+                              <Font name="System Bold" size="12.0" />
+                           </font></Label>
                            <Slider fx:id="zoomSlider" layoutX="70.0" layoutY="73.0" majorTickUnit="0.5" max="2.0" min="0.5" prefHeight="21.0" prefWidth="166.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" style="-fx-padding: 0 10 0 10;" value="1.0" />
                         <Slider fx:id="gridSpacingSlider" layoutX="71.0" layoutY="13.0" majorTickUnit="0.5" max="2.0" min="0.5" prefHeight="44.0" prefWidth="166.0" showTickLabels="true" showTickMarks="true" snapToTicks="true" style="-fx-padding: 0 10 0 10;" value="1.0" />
                      </children>
@@ -114,7 +165,7 @@
          <content>
             <Group>
                <children>
-                  <Pane fx:id="root" prefHeight="3000.0" prefWidth="5000.0" style="-fx-background-color: white;">
+                  <Pane fx:id="root" onContextMenuRequested="#onContextMenuRequest" onMouseClicked="#leftMouseClick" prefHeight="3000.0" prefWidth="5000.0" style="-fx-background-color: white;">
                      <padding>
                         <Insets top="100.0" />
                      </padding>
@@ -122,6 +173,18 @@
                </children>
             </Group>
          </content>
+         <contextMenu>
+            <ContextMenu fx:id="contextMenu">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#deleteShape" text="Delete" />
+                  <MenuItem mnemonicParsing="false" onAction="#copyShape" text="Copy" />
+                  <MenuItem mnemonicParsing="false" onAction="#pasteShape" text="Paste" />
+                  <MenuItem mnemonicParsing="false" onAction="#cutShape" text="Cut" />
+                  <MenuItem mnemonicParsing="false" onAction="#bringToFront" text="Bring to Front" />
+                  <MenuItem mnemonicParsing="false" onAction="#sendToBack" text="Send to Back" />
+              </items>
+            </ContextMenu>
+         </contextMenu>
       </ScrollPane>
    </children>
 </AnchorPane>

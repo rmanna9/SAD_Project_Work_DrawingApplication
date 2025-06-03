@@ -1,7 +1,7 @@
 package com.sad.models.command;
 
 import com.sad.models.Model;
-import com.sad.models.ShapeInterface;
+import com.sad.models.shapes.ShapeInterface;
 
 /**
  * Command to move a specific shape within the model.
@@ -28,8 +28,8 @@ public class MoveShapeCommand implements CommandInterface {
     public MoveShapeCommand(Model receiver, ShapeInterface shape, double[] initialCoords, double[] finalCoords) {
         this.receiver = receiver;
         this.shape = shape;
-        this.initialCoords = initialCoords.clone();
-        this.finalCoords = finalCoords.clone();
+        this.initialCoords = initialCoords;
+        this.finalCoords = finalCoords;
     }
 
     /**

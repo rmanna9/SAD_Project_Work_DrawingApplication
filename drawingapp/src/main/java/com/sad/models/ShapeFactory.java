@@ -1,4 +1,6 @@
 package com.sad.models;
+import com.sad.models.shapes.ShapeInterface;
+
 import javafx.scene.paint.Color;
 
 /**

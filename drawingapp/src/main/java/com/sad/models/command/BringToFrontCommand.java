@@ -1,7 +1,7 @@
 package com.sad.models.command;
 
 import com.sad.models.Model;
-import com.sad.models.ShapeInterface;
+import com.sad.models.shapes.ShapeInterface;
 
 /**
  * Command to bring a specific shape to the front in the model.

@@ -7,6 +7,7 @@ import javafx.scene.shape.Line;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import com.sad.models.*;
+import com.sad.models.shapes.ShapeInterface;
 
 /**
  * Unit test class for LineFactory.

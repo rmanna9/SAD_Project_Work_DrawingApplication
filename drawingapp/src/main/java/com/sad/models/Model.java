@@ -1,10 +1,21 @@
 package com.sad.models;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+
+import com.sad.models.shapes.ConcreteEllipse;
+import com.sad.models.shapes.ConcreteLine;
+import com.sad.models.shapes.ConcreteRectangle;
+import com.sad.models.shapes.ConcreteText;
+import com.sad.models.shapes.ConcretePolygon;
+import com.sad.models.shapes.ShapeInterface;
+
 import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
@@ -130,110 +141,72 @@ public class Model {
     }
 
     /**
-     * Saves all shapes in the pane to a text file using a file chooser.
-     * Serializes each shape to a string and writes it to the file.
+     * Creates a polygon shape and adds it to the pane.
+     * @param points The list of points defining the polygon vertices.
+     * @param bordeColor The border color of the polygon.
+     * @param fillColor The fill color of the polygon.
+     * @return The created polygon shape.
+     */
+    public ShapeInterface createPolygon(List<Double> points, Color bordeColor, Color fillColor){
+        ShapeInterface polygon = new ConcretePolygon(points, bordeColor, fillColor);
+        Node node = polygon.draw();
+        pane.getChildren().add(node);
+        return polygon;
+    }
+
+    /**
+     * Saves the current shapes to a binary file.
+     * Opens a file chooser dialog for the user to select the save location.
      */
     public void save() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Save Shapes");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text files", "*.txt"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Binary files", "*.bin"));
         File file = fileChooser.showSaveDialog(pane.getScene().getWindow());
 
         if (file != null) {
-            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                for (Node node : pane.getChildren()) {
-                    if (node.getUserData() instanceof ShapeInterface) {
-                        ShapeInterface shape = (ShapeInterface) node.getUserData();
-                        // Serialize the shape and write to file
-                        String line = serializeShape(shape);
-                        if (line != null) {
-                            writer.write(line);
-                            writer.newLine();
-                        }
-                    }
+            List<ShapeInterface> shapesToSave = new ArrayList<>();
+            for (Node node : pane.getChildren()) {
+                if (node.getUserData() instanceof ShapeInterface) {
+                    shapesToSave.add((ShapeInterface) node.getUserData());
                 }
-            } catch (Exception e) {
+            }
+
+            try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(file))) {
+                out.writeObject(shapesToSave);
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
     /**
-     * Serializes a shape into a string representation.
-     * @param shape The shape to serialize.
-     * @return The string representation of the shape, or null if the shape type is unsupported.
+     * Loads shapes from a binary file.
+     * Opens a file chooser dialog for the user to select the file to load.
      */
-    public String serializeShape(ShapeInterface shape) {
-        if (shape instanceof ConcreteRectangle) {
-            ConcreteRectangle rectangle = (ConcreteRectangle) shape;
-            return String.format("Rectangle %f %f %f %f %s %s",
-                    rectangle.getX(), rectangle.getY(),
-                    rectangle.getWidth(), rectangle.getHeight(),
-                    colorToString(rectangle.getBorderColor()),
-                    colorToString(rectangle.getFillColor()));
-        } else if (shape instanceof ConcreteEllipse) {
-            ConcreteEllipse ellipse = (ConcreteEllipse) shape;
-            return String.format("Ellipse %f %f %f %f %s %s",
-                    ellipse.getX(), ellipse.getY(),
-                    ellipse.getWidth(), ellipse.getHeight(),
-                    colorToString(ellipse.getBorderColor()),
-                    colorToString(ellipse.getFillColor()));
-        } else if (shape instanceof ConcreteLine){
-            ConcreteLine line = (ConcreteLine) shape;
-            return String.format("Line %f %f %f %f %s",
-                    line.getX(), line.getY(),
-                    line.getX2(), line.getY2(),
-                    colorToString(line.getBorderColor()));
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Converts a JavaFX Color object to a string representation.
-     * @param color The color to convert.
-     * @return The string representation of the color (hex or "transparent").
-     */
-    private String colorToString(Color color) {
-        if (color.getOpacity() == 0.0) {
-            return "transparent";
-        }
-        return String.format("#%02X%02X%02X",
-                (int) (color.getRed() * 255),
-                (int) (color.getGreen() * 255),
-                (int) (color.getBlue() * 255));
-    }
-
-    /**
-     * Loads shapes from a text file using a file chooser.
-     * Deserializes each line into a shape and adds it to the pane.
-     * Clears the command stack and resets selection and factory.
-     */
-    public void load(){
+    public void load() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Load Shapes");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Text files", "*.txt"));
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Binary files", "*.bin"));
         File file = fileChooser.showOpenDialog(pane.getScene().getWindow());
 
         if (file != null) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
-                String line;
+            try (ObjectInputStream in = new ObjectInputStream(new FileInputStream(file))) {
+                List<ShapeInterface> loadedShapes = (List<ShapeInterface>) in.readObject();
+
                 pane.getChildren().clear();
 
-                while ((line = reader.readLine()) != null) {
-                    ShapeInterface shape = deserializeShape(line);
-                    if(shape != null){
-                        Node node = shape.draw();
-                        if(node != null){
-                            pane.getChildren().add(node);
-                        }
+                for (ShapeInterface shape : loadedShapes) {
+                    Node node = shape.draw();
+                    if (node != null) {
+                        pane.getChildren().add(node);
                     }
                 }
 
                 this.selectedShape = null;
                 this.currentFactory = null;
 
-            } catch (Exception e) {
+            } catch (IOException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }
@@ -315,14 +288,10 @@ public class Model {
      * @param newPosition The new coordinates [x, y].
      */
     public void moveShape(ShapeInterface shape, double[] newPosition){
-        shape.setX(newPosition[0]);
-        shape.setY(newPosition[1]);
-        
-        Node node = shape.getNode();
-        if(node != null){
-            node.setLayoutX(newPosition[0]);
-            node.setLayoutY(newPosition[1 ]);
-        }
+        if (shape == null || newPosition == null || newPosition.length != 2) return;
+
+        // Aggiorna i dati nel modello
+        shape.moveTo(newPosition[0], newPosition[1]);
     }
 
     /**
@@ -351,14 +320,13 @@ public class Model {
             Node node = shape.getNode();
             pane.getChildren().remove(node);
         }
-
     }
 
     /**
      * Cuts a shape from the pane and stores a copy in the clipboard.
      * @param shape The shape to cut.
      */
-    public void cutShape( ShapeInterface shape){
+    public void cutShape(ShapeInterface shape){
         if (shape != null) {
             setClipBoardShape(shape.clone());
             shape.setX(0);
@@ -388,7 +356,7 @@ public class Model {
      */
     public ShapeInterface pasteShape(double x, double y) {
         ShapeInterface copiedShape = getClipBoardShape().clone();
-        if (copiedShape !=null){
+        if (copiedShape != null){
             copiedShape.setX(x);
             copiedShape.setY(y);
             Node node = copiedShape.draw();
@@ -409,8 +377,45 @@ public class Model {
             if (!(shape.getShapeFactory() instanceof LineFactory)) {
                 shape.setHeight(newHeight);
             }
-            
         }
+    }
+        
+    /**
+     * Adjusts the dimensions of the specified shape by setting new width and height values.
+     * For line shapes (identified by LineFactory), only the width property is modified since 
+     * lines don't utilize height in the same manner as area-based shapes.
+     * 
+     * @param shape The shape interface to be modified
+     * @param newWidth The new width value to apply to the shape
+     * @param newHeight The new height value to apply (ignored for line shapes)
+     */
+    public void stretchShape(ShapeInterface shape, double newWidth, double newHeight) {
+        if (shape != null) {
+            // Always update width for all shapes
+            shape.setWidth(newWidth);
+            
+            // Only update height for non-line shapes (rectangles, ellipses, etc.)
+            if (!(shape.getShapeFactory() instanceof LineFactory)) {
+                shape.setHeight(newHeight);
+            }
+        }
+    }
+
+    /**
+     * Rotates a shape to the specified angle.
+     * @param shape The shape to rotate.
+     * @param angle The rotation angle in degrees.
+     */
+    public void rotateShape(ShapeInterface shape, double angle){
+        shape.setAngle(angle);
+    }
+
+    public void mirrorXShape(ShapeInterface shape){
+        shape.mirrorX();
+    }
+
+    public void mirrorYShape(ShapeInterface shape){
+        shape.mirrorY();
     }
 
     /**
@@ -466,4 +471,25 @@ public class Model {
         }
     }
 
+    /**
+     * Edits the text content of a ConcreteText shape.
+     * @param textShape The text shape to edit.
+     * @param newText The new text content.
+     */
+    public void editText(ConcreteText textShape, String newText){
+        if(textShape != null){
+            textShape.setContent(newText);
+        }
+    }
+
+    /**
+     * Edits the font size of a ConcreteText shape.
+     * @param textShape The text shape to edit.
+     * @param newSize The new font size.
+     */
+    public void editFontSize(ConcreteText textShape, double newSize){
+        if(textShape != null){
+            textShape.setFontSize(newSize);
+        }
+    }
 }

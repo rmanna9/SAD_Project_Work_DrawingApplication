@@ -1,17 +1,20 @@
 package com.sad;
 
 import javafx.fxml.FXML;
-import javafx.scene.input.MouseButton;
+import javafx.scene.input.ContextMenuEvent;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.Shape;
 import javafx.scene.transform.Scale;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.layout.Pane;
 import javafx.scene.control.MenuItem;
@@ -25,6 +28,13 @@ import java.util.function.UnaryOperator;
 
 import com.sad.models.*;
 import com.sad.models.command.*;
+import com.sad.models.shapes.ConcreteText;
+import com.sad.models.shapes.ShapeInterface;
+import com.sad.models.state.DrawingShapeState;
+import com.sad.models.state.PolygonDrawingState;
+import com.sad.models.state.SelectingState;
+import com.sad.models.state.StateInterface;
+import com.sad.models.state.TextInsertState;
 
 /**
  * Controller class for the Drawing Application.
@@ -33,19 +43,65 @@ import com.sad.models.command.*;
  */
 public class Controller {
 
+    /** Root pane containing all UI elements */
     @FXML private Pane root;
+    
+    /** Color picker for selecting border color */
     @FXML private ColorPicker borderColorPicker;
+    
+    /** Color picker for selecting fill color */
     @FXML private ColorPicker fillColorPicker;
+    
+    /** ImageView for line tool selection */
     @FXML private ImageView lineImageView;
+    
+    /** ImageView for rectangle tool selection */
     @FXML private ImageView rectangleImageView;
+    
+    /** ImageView for ellipse tool selection */
     @FXML private ImageView ellipseImageView;
+    
+    /** ImageView for polygon tool selection */
+    @FXML private ImageView polygonImageView;
+    
+    /** ImageView for selection tool */
     @FXML private ImageView selectImageView;
+    
+    /** ImageView for text tool selection */
+    @FXML private ImageView textImageView;
+    
+    /** Context menu for shape operations */
     @FXML private ContextMenu contextMenu;
+    
+    /** Menu item in context menu */
     @FXML private MenuItem MenuItem;
+    
+    /** Text field for resize input */
     @FXML private TextField resizeTextField;
+    
+    /** Text field for text input */
+    @FXML private TextField textInput;
+    
+    /** Text field for horizontal stretch input */
+    @FXML private TextField stretchXTextField;
+    
+    /** Text field for vertical stretch input */
+    @FXML private TextField stretchYTextField;
+    
+    /** Text field for rotation angle input */
+    @FXML private TextField angleTextField;
+    
+    /** Checkbox to toggle grid visibility */
     @FXML private CheckBox gridCheckBox;
+    
+    /** Slider for zoom level adjustment */
     @FXML private Slider zoomSlider;
+    
+    /** Slider for grid spacing adjustment */
     @FXML private Slider gridSpacingSlider;
+    
+    /** Combo box for font size selection */
+    @FXML private ComboBox<Integer> fontSizeMenu;
 
     /** Filter for decimal input in the resize text field. */
     private final UnaryOperator<TextFormatter.Change> decimalFilter = change -> {
@@ -56,24 +112,23 @@ public class Controller {
         return null;
     };
 
-    /** Current border color for new shapes. */
-    private Color borderColor = Color.BLACK;
-    /** Current fill color for new shapes. */
-    private Color fillColor = Color.TRANSPARENT;
-    /** Current click mode ("draw" or "select"). */
-    private String clickMode = null;
     /** Mouse X coordinate for context menu and paste actions. */
     private double mouseX, mouseY;
+    
     /** Canvas for drawing the grid. */
     private Canvas gridCanvas;
+    
     /** Scale transform for zooming the drawing area. */
     private Scale scaleTransform = new Scale(1, 1);
+    
     /** Current grid spacing. */
     private double gridSpacing = 20; 
+    
     /** Available grid spacing levels. */
-    private final double[] GRID_LEVELS = {20, 40, 80};
+    private final double[] GRID_LEVELS = {40, 80, 160};
+    
     /** Index of the current grid spacing level. */
-    private int currentGridLevelIndex = 1; 
+    private int currentGridLevelIndex = 0; 
 
     /** The application model managing shapes and commands. */
     private Model model;
@@ -81,19 +136,40 @@ public class Controller {
     /** The stack of executed commands for undo functionality. */
     private Stack<CommandInterface> commandStack;
 
+    /** State for selecting shapes */
+    private SelectingState selectingState;
+    
+    /** State for drawing basic shapes */
+    private DrawingShapeState drawingShapeState;
+    
+    /** State for drawing polygons */
+    private PolygonDrawingState drawingPolygonState;
+    
+    /** State for inserting text */
+    private TextInsertState insertTextState;
+    
+    /** Current application state */
+    private StateInterface currentState; 
+    
+    /** Previous font size for change detection */
+    private int oldFontSize;
+
+
     /**
      * Initializes the controller.
      * Sets up color pickers, mouse event handlers, grid, zoom, and context menu.
      */
     public void initialize() {
+        highlightSelected(selectImageView);
         commandStack = new Stack<CommandInterface>();
         model = new Model(root);
         setupDrawingAreaClip(); 
         setupColorPickers(); 
-        root.addEventHandler(MouseEvent.MOUSE_CLICKED, this::handleClickMode); 
-        setupContextMenu();
         resizeTextField.setTextFormatter(new TextFormatter<>(decimalFilter));
-        
+        angleTextField.setTextFormatter(new TextFormatter<>(decimalFilter));
+        stretchXTextField.setTextFormatter(new TextFormatter<>(decimalFilter));
+        stretchYTextField.setTextFormatter(new TextFormatter<>(decimalFilter));
+
         setupGridCanvas();
         ensureGridIsAtBack();
         setupGridToggle();
@@ -120,6 +196,165 @@ public class Controller {
             double snappedValue = Math.round(newVal.doubleValue() * 2) / 2.0;
             zoomSlider.setValue(snappedValue);
         });
+
+        textInput.setDisable(true);
+        textInput.textProperty().addListener((obs, oldVal, newVal) -> {
+            if (currentState instanceof TextInsertState) {
+                ConcreteText currentText = ((TextInsertState) currentState).getCurrentText();
+                if (currentText != null) {
+                    currentText.setContent(newVal);
+                }
+            }
+        });
+
+        selectingState = new SelectingState(this, model);
+        drawingShapeState = new DrawingShapeState(this, model, borderColorPicker, fillColorPicker);
+        drawingPolygonState = new PolygonDrawingState(this, model, borderColorPicker, fillColorPicker);
+        insertTextState = new TextInsertState(this, model);
+        currentState = selectingState;
+
+        initializeSizeComboBox();
+
+        fontSizeMenu.focusedProperty().addListener((obs, wasFocused, isFocused) -> {
+            if (isFocused) {
+                oldFontSize = fontSizeMenu.getValue();
+            } 
+        });
+
+        fontSizeMenu.valueProperty().addListener((obs, oldVal, newVal) -> {
+            if (newVal == null) return;
+
+            if (newVal != oldFontSize) {
+                applyFontSizeChange(newVal);
+                oldFontSize = newVal;
+            }
+        });
+
+    }
+
+    /**
+     * Sets the current application state.
+     * @param newState The state to transition to
+     */
+    private void setCurrentState(StateInterface newState){
+        if (this.currentState != null) {
+            this.currentState.onExit(); 
+        }
+        this.currentState = newState;
+    }
+
+    /**
+     * Gets the current application state.
+     * @return Current state object
+     */
+    private StateInterface getCurrentState(){
+        return this.currentState;
+    }
+
+    /**
+     * Gets the root pane.
+     * @return Root pane instance
+     */
+    public Pane getRoot(){
+        return this.root;
+    }
+
+    /**
+     * Gets the context menu.
+     * @return Context menu instance
+     */
+    public ContextMenu getContextMenu(){
+        return this.contextMenu;
+    }
+
+    /**
+     * Gets the resize text field.
+     * @return Resize text field
+     */
+    public TextField getResizeTexField(){
+        return this.resizeTextField;
+    }
+
+    /**
+     * Gets the text input field.
+     * @return Text input field
+     */
+    public TextField getTextInputField(){
+        return this.textInput;
+    }
+
+    /**
+     * Gets the border color picker.
+     * @return Border color picker
+     */
+    public ColorPicker getBordColorPicker() {
+        return this.borderColorPicker;
+    }
+
+    /**
+     * Gets the fill color picker.
+     * @return Fill color picker
+     */
+    public ColorPicker getFillColorPicker() {
+        return this.fillColorPicker;
+    }
+
+    /**
+     * Gets the font size combo box.
+     * @return Font size selection combo box
+     */
+    public ComboBox<Integer> getFontSizeMenuButton(){
+        return fontSizeMenu;
+    }
+
+    /**
+     * Sets mouse X coordinate for paste operations.
+     * @param mouseX X coordinate value
+     */
+    public void setMouseX(double mouseX){
+        this.mouseX = mouseX;
+    }
+
+    /**
+     * Sets mouse Y coordinate for paste operations.
+     * @param mouseY Y coordinate value
+     */
+    public void setMouseY(double mouseY){
+        this.mouseY = mouseY;
+    }
+
+    /**
+     * Applies font size change to selected text shape.
+     * @param newFontSize New font size value
+     */
+    private void applyFontSizeChange(double newFontSize) {
+        ShapeInterface selectedShape = model.getShapeFromNode(model.getSelectedShape());
+        if (selectedShape instanceof ConcreteText) {
+            ConcreteText textShape = (ConcreteText) selectedShape;
+            double oldSize = textShape.getFontSize();
+
+            if (newFontSize != oldSize) {
+                CommandInterface cmd = new EditFontSizeCommand(model, textShape, newFontSize);
+                executeCommand(cmd);
+            }
+        }
+    }
+
+    /**
+     * Attaches keyboard handler to the scene.
+     * @param scene JavaFX scene to attach handler to
+     */
+    public void attachKeyHandlerToScene(Scene scene) {
+        scene.setOnKeyPressed(this::onKeyPressed);
+    }
+
+    /**
+     * Initializes font size combo box with default values.
+     */
+    private void initializeSizeComboBox(){
+        fontSizeMenu.getItems().addAll(12, 14, 16 , 18, 20, 24, 28, 32);
+        fontSizeMenu.setValue(20);
+        fontSizeMenu.setDisable(true);
     }
 
     /**
@@ -133,6 +368,7 @@ public class Controller {
         gridSpacingSlider.setSnapToTicks(true);
         gridSpacingSlider.setBlockIncrement(1);
         gridSpacingSlider.setValue(currentGridLevelIndex);
+        gridSpacingSlider.setDisable(!gridCanvas.isVisible());
 
         gridSpacingSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
             currentGridLevelIndex = newVal.intValue();
@@ -188,8 +424,8 @@ public class Controller {
 
     /**
      * Draws the grid on the specified canvas with the given spacing.
-     * @param canvas The canvas to draw the grid on.
-     * @param spacing The spacing between grid lines.
+     * @param canvas The canvas to draw the grid on
+     * @param baseSpacing The base spacing between grid lines
      */
     private void drawGrid(Canvas canvas, double baseSpacing) {
         gridSpacing = baseSpacing;
@@ -227,213 +463,18 @@ public class Controller {
     }
 
     /**
-     * Handles mouse clicks based on the current click mode ("draw" or "select").
-     * @param event The mouse event.
-     */
-    private void handleClickMode (MouseEvent event) {
-        if(clickMode == null) {
-            return; 
-        }else if(clickMode.equals("draw")) {
-            drawShape(event);
-        }else if (clickMode.equals("select")) {
-            shapeSelection(event);
-        }
-    }
-
-    /**
-     * Handles shape selection logic and updates UI accordingly.
-     * @param event The mouse event.
-     */
-    private void shapeSelection(MouseEvent event) {
-        contextMenu.hide(); 
-        Object target = event.getTarget();
-        
-        if (target instanceof Shape) {
-            Shape clickedShape = (Shape) target;
-
-            if (clickedShape != model.getSelectedShape()) {
-                resizeTextField.setDisable(true);
-                resizeTextField.setText(""); 
-                model.deselectShape();
-                model.setSelectedShape(clickedShape);
-                model.setSelectedShapeStyle("-fx-effect: dropshadow(three-pass-box, #00bfff, 10, 0, 0, 0);");
-
-                ShapeInterface shapeModel = model.getShapeFromNode(clickedShape);
-                if (shapeModel != null) {
-                    borderColorPicker.setValue((Color) clickedShape.getStroke());
-                    fillColorPicker.setValue((Color) clickedShape.getFill());
-                    borderColor = borderColorPicker.getValue();
-                    fillColor = fillColorPicker.getValue();
-                }
-            }
-            resizeTextField.setDisable(false);
-            enableMoveShape(clickedShape);
-
-        } else {
-            resizeTextField.setDisable(true);
-            model.deselectShape();
-        }
-    }
-
-    /**
-     * Sets up the context menu for shape actions (delete, cut, copy, paste, bring to front, send to back).
-     */
-    private void setupContextMenu() {
-        contextMenu = new ContextMenu();
-        MenuItem deleteItem = new MenuItem("Delete");
-        deleteItem.setOnAction(e -> deleteShape());
-        MenuItem cutItem = new MenuItem("Cut");
-        cutItem.setOnAction(e -> cutShape());
-        MenuItem copyItem = new MenuItem("Copy");
-        copyItem.setOnAction(e -> copyShape());
-        MenuItem pasteItem = new MenuItem("Paste");
-        pasteItem.setOnAction(e -> pasteShape());
-        MenuItem brtingToFront = new MenuItem("Bring to Front");
-        brtingToFront.setOnAction(e -> brtingToFront());
-        MenuItem sendToBack = new MenuItem("Send to Back");
-        sendToBack.setOnAction(e -> sendToBack());
-
-        contextMenu.getItems().add(deleteItem);
-        contextMenu.getItems().add(cutItem);
-        contextMenu.getItems().add(copyItem);
-        contextMenu.getItems().add(pasteItem);
-        contextMenu.getItems().add(brtingToFront);
-        contextMenu.getItems().add(sendToBack);
-        
-        root.setOnContextMenuRequested(event -> {
-            if (!"select".equals(clickMode)) {
-                return;
-            }
-
-            mouseX = event.getX();
-            mouseY = event.getY();
-
-            Object target = event.getTarget();
-            boolean isTargetSelectedShape = target instanceof Shape && target == model.getSelectedShape();
-            deleteItem.setDisable(!isTargetSelectedShape);
-            copyItem.setDisable(!isTargetSelectedShape);
-            cutItem.setDisable(!isTargetSelectedShape);
-            pasteItem.setDisable(model.getClipBoardShape() == null);
-            brtingToFront.setDisable(model.isOnTheFront());
-            sendToBack.setDisable(model.isOnTheBack());
-            contextMenu.setAutoFix(true);
-
-            contextMenu.show(root, event.getScreenX(), event.getScreenY());
-
-            event.consume();
-        });
-    }
-
-    /**
-     * Enables moving a shape by dragging it with the mouse.
-     * @param shape The shape to enable movement for.
-     */
-    private void enableMoveShape(Shape shape) {
-        double[] delta = new double[2];
-        double[] initialCoords = new double[2];
-
-        shape.setOnMousePressed(event -> {
-            initialCoords[0] = shape.getLayoutX();
-            initialCoords[1] = shape.getLayoutY();
-
-            delta[0] = event.getSceneX() - shape.getLayoutX();
-            delta[1] = event.getSceneY() - shape.getLayoutY();
-
-            event.consume();
-        });
-
-        shape.setOnMouseDragged(event -> {
-            double x = event.getSceneX() - delta[0];
-            double y = event.getSceneY() - delta[1];
-            shape.setLayoutX(x);
-            shape.setLayoutY(y);
-
-            event.consume();
-        });
-
-        shape.setOnMouseReleased(event -> {
-            double finalX = shape.getLayoutX();
-            double finalY = shape.getLayoutY();
-            
-            ShapeInterface shapeModel = model.getShapeFromNode(shape);
-            if (shapeModel != null) {
-                double[] finalCoords = {finalX, finalY};
-
-                if (initialCoords[0] == finalCoords[0] && initialCoords[1] == finalCoords[1]) {
-                    return; 
-                }
-                CommandInterface move = new MoveShapeCommand(model, shapeModel, initialCoords, finalCoords);
-                move.execute();
-                
-            }
-
-            event.consume();
-        });
-    }
-
-    /**
-     * Handles the selection of the Line tool.
-     * Sets the current factory to LineFactory and highlights the selected icon.
-     */
-    @FXML
-    private void onSelectLine() {
-        model.setCurrentFactory(new LineFactory());
-        highlightSelected(lineImageView);
-        clickMode = "draw";
-        model.deselectShape();
-    }
-
-    /**
-     * Handles the selection of the Rectangle tool.
-     * Sets the current factory to RectangleFactory and highlights the selected icon.
-     */
-    @FXML
-    private void onSelectRectangle() {
-        model.setCurrentFactory(new RectangleFactory());
-        highlightSelected(rectangleImageView);
-        clickMode = "draw";
-        model.deselectShape();
-    }
-
-    /**
-     * Handles the selection of the Ellipse tool.
-     * Sets the current factory to EllipseFactory and highlights the selected icon.
-     */
-    @FXML
-    private void onSelectEllipse() {
-        model.setCurrentFactory(new EllipseFactory());
-        highlightSelected(ellipseImageView);
-        clickMode = "draw";
-        model.deselectShape();
-    }
-
-    /**
      * Highlights the selected shape icon and removes highlight from others.
-     * @param selected The ImageView to highlight.
+     * @param selected The ImageView to highlight
      */
     private void highlightSelected(ImageView selected) {
         lineImageView.setStyle("");
         rectangleImageView.setStyle("");
         ellipseImageView.setStyle("");
         selectImageView.setStyle("");
+        polygonImageView.setStyle("");
+        textImageView.setStyle("");
 
         selected.setStyle("-fx-effect: dropshadow(three-pass-box, #00bfff, 10, 0, 0, 0);");
-    }
-
-    /**
-     * Draws a shape at the mouse click position using the current factory and colors.
-     * @param event MouseEvent containing the click coordinates.
-     */
-    private void drawShape(MouseEvent event){
-        if (event.getButton() == MouseButton.PRIMARY){
-            double x = event.getX();
-            double y = event.getY();
-        
-            CommandInterface command = new DrawShapeCommand(model, x, y, borderColor, fillColor);
-            command.execute();
-            commandStack.push(command);
-        }
-        event.consume();
     }
     
     /**
@@ -441,18 +482,15 @@ public class Controller {
      * Updates the controller's color fields on user selection.
      */
     private void setupColorPickers() {
-        borderColorPicker.setValue(borderColor);
-        fillColorPicker.setValue(fillColor);
+        borderColorPicker.setValue(Color.BLACK);
+        fillColorPicker.setValue(Color.TRANSPARENT);
         
         borderColorPicker.setOnAction(event -> {
-            borderColor = borderColorPicker.getValue();
             updateShapeColorFromPicker();
         });
 
         fillColorPicker.setOnAction(event -> {
-            fillColor = fillColorPicker.getValue();
             updateShapeColorFromPicker();
-
         });
     }
 
@@ -464,7 +502,7 @@ public class Controller {
         if(selectedNode instanceof Shape) {
             ShapeInterface shape = model.getShapeFromNode((Shape) selectedNode);
             if (shape != null) {
-                CommandInterface command = new ChangeShapeColorCommand(model, shape, borderColor, fillColor);
+                CommandInterface command = new ChangeShapeColorCommand(model, shape, borderColorPicker.getValue(), fillColorPicker.getValue());
                 command.execute();
                 commandStack.push(command);
             }
@@ -472,8 +510,96 @@ public class Controller {
     }
 
     /**
+     * Handles mouse click events.
+     * @param event Mouse event object
+     */
+    @FXML
+    private void leftMouseClick(MouseEvent event){
+        getCurrentState().handleOnMouseClick(event);
+    }
+
+    /**
+     * Handles context menu requests.
+     * @param event Context menu event object
+     */
+    @FXML
+    private void onContextMenuRequest(ContextMenuEvent event){
+        getCurrentState().handleOnContextMenuRequest(event);
+    }
+
+    /**
+     * Handles key press events.
+     * @param event Key event object
+     */
+    private void onKeyPressed(KeyEvent event){
+        getCurrentState().onKeyPressed(event);
+    }
+
+    /**
+     * Handles the selection of the Line tool.
+     * Sets the current factory to LineFactory and highlights the selected icon.
+     */
+    @FXML
+    private void onSelectLine() {
+        model.setCurrentFactory(new LineFactory());
+        highlightSelected(lineImageView);
+        model.deselectShape();
+        setCurrentState(drawingShapeState);
+    }
+
+    /**
+     * Handles the selection of the Rectangle tool.
+     * Sets the current factory to RectangleFactory and highlights the selected icon.
+     */
+    @FXML
+    private void onSelectRectangle() {
+        model.setCurrentFactory(new RectangleFactory());
+        highlightSelected(rectangleImageView);
+        model.deselectShape();
+        setCurrentState(drawingShapeState);
+    }
+
+    /**
+     * Handles the selection of the Ellipse tool.
+     * Sets the current factory to EllipseFactory and highlights the selected icon.
+     */
+    @FXML
+    private void onSelectEllipse() {
+        model.setCurrentFactory(new EllipseFactory());
+        highlightSelected(ellipseImageView);
+        model.deselectShape();
+        setCurrentState(drawingShapeState);
+    }
+
+    /**
+     * Handles the selection of the Polygon tool.
+     * Highlights the polygon icon and transitions to polygon drawing state.
+     */
+    @FXML
+    private void onSelectPolygon(){
+        highlightSelected(polygonImageView);
+        model.deselectShape();
+        setCurrentState(drawingPolygonState);
+    }
+
+    /**
+     * Handles the selection of the Text tool.
+     * Enables font controls, highlights text icon, and transitions to text state.
+     */
+    @FXML
+    private void onSelectText(){
+        fontSizeMenu.setDisable(false);
+        resizeTextField.setDisable(true);
+        
+        highlightSelected(textImageView);
+        model.deselectShape();
+        setCurrentState(insertTextState); 
+    }
+
+    /**
      * Deletes the currently selected shape using a DeleteShapeCommand.
      */
+    @FXML
     private void deleteShape(){
         Node selectedNode = model.getSelectedShape();
         if(selectedNode instanceof Shape) {
@@ -489,6 +615,7 @@ public class Controller {
     /**
      * Cuts the currently selected shape using a CutShapeCommand.
      */
+    @FXML
     private void cutShape() {
         Node selectedNode = model.getSelectedShape();
         if (selectedNode instanceof Shape) {
@@ -504,6 +631,7 @@ public class Controller {
     /**
      * Copies the currently selected shape using a CopyShapeCommand.
      */
+    @FXML
     private void copyShape() {
         Node selectedNode = model.getSelectedShape();
         if (selectedNode instanceof Shape) {
@@ -518,6 +646,7 @@ public class Controller {
     /**
      * Pastes the shape from the clipboard at the last right-click position.
      */
+    @FXML
     private void pasteShape(){
         ShapeInterface shapeToPaste = model.getClipBoardShape();
         if(shapeToPaste == null) { return; }
@@ -535,13 +664,6 @@ public class Controller {
         if(model.getSelectedShape() == null) {
             return;
         }
-        applyResize();
-    }
-
-    /**
-     * Applies resizing to the selected shape using the value from the text field.
-     */
-    private void applyResize(){
         String text = resizeTextField.getText();   
         if (text.isEmpty()) { return; }
 
@@ -551,8 +673,7 @@ public class Controller {
             if (scale <= 0){ return; }
             ShapeInterface shapeToResize = (ShapeInterface) model.getSelectedShape().getUserData();
             CommandInterface command = new ResizeShapeCommand(model, shapeToResize, scale);
-            command.execute();
-            commandStack.push(command);
+            executeCommand(command);
             
         } catch (NumberFormatException e) {
             System.out.println("Invalid input for resize: " + text);
@@ -560,9 +681,150 @@ public class Controller {
     }
 
     /**
+     * Handles text input confirmation.
+     * Either creates new text or updates existing text based on current state.
+     */
+    @FXML
+    private void onTextInputButtonClick(){
+        if (currentState instanceof TextInsertState) {
+            ConcreteText currentText = insertTextState.getCurrentText();
+            if (currentText != null) {
+                ShapeInterface shape = currentText.clone();
+                shape.draw();
+                executeCommand(new InsertTextCommand(model, shape));
+                root.getChildren().remove(currentText.getNode());
+                insertTextState.clearCurrentText();
+                fontSizeMenu.setDisable(true);
+
+            }
+        } else {
+            ShapeInterface selected = model.getShapeFromNode(model.getSelectedShape());
+            if (selected instanceof ConcreteText) {
+                ConcreteText textShape = (ConcreteText) selected;
+                String oldText = textShape.getContent();
+                String newText = textInput.getText();
+
+                if (!newText.equals(oldText)) {
+                    CommandInterface cmd = new EditTextCommand(model, textShape, oldText, newText);
+                    executeCommand(cmd);
+                }
+            }
+        }
+        textInput.setDisable(true);
+        textInput.clear();
+    }    
+    
+    /**
+     * Applies horizontal stretching to selected shape.
+     */
+    @FXML
+    private void onStretchXButtonClick() {
+        if(model.getSelectedShape() == null) {
+            return;
+        }
+        String textX = stretchXTextField.getText(); 
+        if (textX.isEmpty()) { return; }
+
+        try {
+            double scaleX = Double.parseDouble(textX.replace(',', '.'));
+            double scaleY = 1;
+
+            if (scaleX <= 0){ return; }
+            ShapeInterface shapeToResize = (ShapeInterface) model.getSelectedShape().getUserData();
+            CommandInterface command = new StretchShapeCommand(model, shapeToResize, scaleX, scaleY);
+            executeCommand(command);
+            
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input for stretch: ");
+        }
+    }
+
+    /**
+     * Applies vertical stretching to selected shape.
+     */
+    @FXML
+    private void onStretchYButtonClick() {
+        if(model.getSelectedShape() == null) {
+            return;
+        }
+        String textY = stretchYTextField.getText(); 
+        if (textY.isEmpty()) { return; }
+
+        try {
+            double scaleY = Double.parseDouble(textY.replace(',', '.'));
+            double scaleX = 1;
+
+            if (scaleY <= 0){ return; }
+            ShapeInterface shapeToResize = (ShapeInterface) model.getSelectedShape().getUserData();
+            CommandInterface command = new StretchShapeCommand(model, shapeToResize, scaleX, scaleY);
+            executeCommand(command);
+            
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input for stretch: ");
+        }
+    }
+	
+    /**
+     * Applies rotation to selected shape.
+     */
+    @FXML
+    public void onRotateButtonClick(){
+        if(model.getSelectedShape() == null) {
+            return;
+        }
+        String angle = angleTextField.getText(); 
+        if (angle.isEmpty()) { return; }
+
+        try {
+            double angleR = Double.parseDouble(angleTextField.getText());
+
+            if (angleR <= 0){ return; }
+            ShapeInterface shapeToResize = (ShapeInterface) model.getSelectedShape().getUserData();
+            CommandInterface command = new RotateShapeCommand(model, shapeToResize, angleR);
+            executeCommand(command);
+            
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid input for stretch: ");
+        }
+    }
+
+    /**
+     * Mirrors selected shape horizontally.
+     */
+    @FXML
+    public void mirrorXShape(){
+        Node selectedNode = model.getSelectedShape();
+        if(selectedNode instanceof Shape) {
+            ShapeInterface shape = model.getShapeFromNode((Shape) selectedNode);
+            if (shape != null){
+                CommandInterface command = new MirrorXShapeCommand(model, shape );
+                command.execute();
+                commandStack.push(command);
+            }
+        }
+    }
+
+    /**
+     * Mirrors selected shape vertically.
+     */
+    @FXML
+    public void mirrorYShape(){
+        Node selectedNode = model.getSelectedShape();
+        if(selectedNode instanceof Shape) {
+            ShapeInterface shape = model.getShapeFromNode((Shape) selectedNode);
+            if (shape != null){
+                CommandInterface command = new MirrorYShapeCommand(model, shape );
+                command.execute();
+                commandStack.push(command);
+            }
+        }
+    }
+
+    /**
      * Brings the selected shape to the front using a BringToFrontCommand.
      */
-    public void brtingToFront() {
+    @FXML
+    public void bringToFront() {
         Node selectNode = model.getSelectedShape();
         if (selectNode instanceof Shape) {
             ShapeInterface shape = model.getShapeFromNode((Shape) selectNode);
@@ -579,6 +841,7 @@ public class Controller {
     /**
      * Sends the selected shape to the back using a SendToBackCommand.
      */
+    @FXML
     public void sendToBack() {
         Node selectNode = model.getSelectedShape();
         if (selectNode instanceof Shape) {
@@ -622,8 +885,17 @@ public class Controller {
      */
     @FXML
     private void onSelectButtonClick() {
-        clickMode = "select";
         highlightSelected(selectImageView);
+        setCurrentState(selectingState);
+    }
+
+    /**
+     * Executes a command and adds it to the command stack.
+     * @param command Command to execute
+     */
+    public void executeCommand(CommandInterface command){
+        command.execute();
+        commandStack.push(command);
     }
 
     /**
