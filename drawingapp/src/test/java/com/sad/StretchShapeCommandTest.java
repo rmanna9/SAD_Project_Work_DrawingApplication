@@ -39,7 +39,7 @@ class StretchShapeCommandTest {
 
         command.execute();
 
-        verify(modelMock).stretchShape(shapeMock, expectedWidth, expectedHeight);
+        verify(modelMock).resizeShape(shapeMock, expectedWidth, expectedHeight);
     }
 
     @Test
@@ -47,6 +47,6 @@ class StretchShapeCommandTest {
         command.execute(); // simula l'esecuzione iniziale
         command.undo();    // esegue l'annullamento
 
-        verify(modelMock).stretchShape(shapeMock, originalWidth, originalHeight);
+        verify(modelMock).resizeShape(shapeMock, originalWidth, originalHeight);
     }
 }

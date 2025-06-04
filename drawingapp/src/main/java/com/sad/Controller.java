@@ -275,6 +275,14 @@ public class Controller {
         return this.resizeTextField;
     }
 
+    public TextField getStretchXField(){
+        return this.stretchXTextField;
+    }
+
+    public TextField getStretchYField(){
+        return this.stretchYTextField;
+    }
+
     /**
      * Gets the text input field.
      * @return Text input field
@@ -557,6 +565,7 @@ public class Controller {
         highlightSelected(rectangleImageView);
         model.deselectShape();
         setCurrentState(drawingShapeState);
+        fillColorPicker.setValue(Color.TRANSPARENT);
     }
 
     /**
@@ -569,6 +578,8 @@ public class Controller {
         highlightSelected(ellipseImageView);
         model.deselectShape();
         setCurrentState(drawingShapeState);
+        fillColorPicker.setValue(Color.TRANSPARENT);
+
     }
 
     /**
@@ -580,6 +591,7 @@ public class Controller {
         highlightSelected(polygonImageView);
         model.deselectShape();
         setCurrentState(drawingPolygonState);
+        fillColorPicker.setValue(Color.TRANSPARENT);
     }
 
     /**
@@ -590,10 +602,11 @@ public class Controller {
     private void onSelectText(){
         fontSizeMenu.setDisable(false);
         resizeTextField.setDisable(true);
-        
         highlightSelected(textImageView);
         model.deselectShape();
         setCurrentState(insertTextState); 
+        fillColorPicker.setValue(Color.TRANSPARENT);
+
     }
 
     /**
@@ -671,10 +684,13 @@ public class Controller {
             double scale = Double.parseDouble(text.replace(',', '.'));
 
             if (scale <= 0){ return; }
+            if (scale >= 25) {scale = 25;}
+            resizeTextField.setText(String.valueOf(scale));
             ShapeInterface shapeToResize = (ShapeInterface) model.getSelectedShape().getUserData();
             CommandInterface command = new ResizeShapeCommand(model, shapeToResize, scale);
             executeCommand(command);
-            
+            System.out.println(shapeToResize.getWidth());
+            System.out.println(shapeToResize.getHeight());    
         } catch (NumberFormatException e) {
             System.out.println("Invalid input for resize: " + text);
         }
@@ -730,10 +746,11 @@ public class Controller {
             double scaleY = 1;
 
             if (scaleX <= 0){ return; }
+            if (scaleX >= 25){ scaleX = 25; }
+            stretchXTextField.setText(String.valueOf(scaleX));
             ShapeInterface shapeToResize = (ShapeInterface) model.getSelectedShape().getUserData();
             CommandInterface command = new StretchShapeCommand(model, shapeToResize, scaleX, scaleY);
             executeCommand(command);
-            
         } catch (NumberFormatException e) {
             System.out.println("Invalid input for stretch: ");
         }
@@ -755,10 +772,11 @@ public class Controller {
             double scaleX = 1;
 
             if (scaleY <= 0){ return; }
+            if (scaleY >= 25){ scaleY = 25; }
+            stretchYTextField.setText(String.valueOf(scaleY));
             ShapeInterface shapeToResize = (ShapeInterface) model.getSelectedShape().getUserData();
             CommandInterface command = new StretchShapeCommand(model, shapeToResize, scaleX, scaleY);
             executeCommand(command);
-            
         } catch (NumberFormatException e) {
             System.out.println("Invalid input for stretch: ");
         }
@@ -905,6 +923,7 @@ public class Controller {
     @FXML
     private void onUndoButtonClick() {
         if(commandStack.isEmpty()) { return; }
+        currentState.onExit();
         CommandInterface command = commandStack.pop();
         command.undo();
         ensureGridIsAtBack();

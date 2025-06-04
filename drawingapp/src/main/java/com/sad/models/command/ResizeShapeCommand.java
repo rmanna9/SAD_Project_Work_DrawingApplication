@@ -40,6 +40,8 @@ public class ResizeShapeCommand implements CommandInterface {
      */
     @Override
     public void execute() {
+        if((originalWidth * scaleFactor) > 2500) {return;}
+        if((originalWidth * scaleFactor) < 2.5) {return;}
         receiver.resizeShape(shape, originalWidth * scaleFactor, originalHeight * scaleFactor);
     }
 

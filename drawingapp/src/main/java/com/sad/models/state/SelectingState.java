@@ -54,6 +54,10 @@ public class SelectingState implements StateInterface {
             if (clickedShape.getNode() != model.getSelectedShape()) {
                 controller.getResizeTexField().setDisable(true);
                 controller.getResizeTexField().setText("");
+                controller.getStretchXField().setDisable(true);
+                controller.getStretchXField().setText("");
+                controller.getStretchYField().setDisable(true);
+                controller.getStretchYField().setText("");
                 model.deselectShape();
                 model.setSelectedShape(clickedShape.getNode());
                 model.setSelectedShapeStyle("-fx-effect: dropshadow(three-pass-box, #00bfff, 10, 0, 0, 0);");
@@ -61,11 +65,15 @@ public class SelectingState implements StateInterface {
                 controller.getBordColorPicker().setValue(clickedShape.getBorderColor());
                 controller.getFillColorPicker().setValue(clickedShape.getFillColor());
             }
-            controller.getResizeTexField().setDisable(false);
 
+            controller.getResizeTexField().setDisable(false);
+            controller.getStretchXField().setDisable(false);
+            controller.getStretchYField().setDisable(false);
+            
             if (clickedShape instanceof ConcreteText) {
                 ConcreteText textShape = (ConcreteText) clickedShape;
-
+                
+                controller.getResizeTexField().setDisable(true);
                 controller.getTextInputField().setText(textShape.getContent());
                 controller.getTextInputField().setDisable(false);
 

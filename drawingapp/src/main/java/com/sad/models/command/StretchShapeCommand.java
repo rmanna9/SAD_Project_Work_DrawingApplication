@@ -1,5 +1,6 @@
 package com.sad.models.command;
 
+import com.sad.models.LineFactory;
 import com.sad.models.Model;
 import com.sad.models.shapes.ShapeInterface;
 
@@ -43,7 +44,14 @@ public class StretchShapeCommand implements CommandInterface {
      */
     @Override
     public void execute() {
-        receiver.stretchShape(shape, originalWidth * scaleFactorX, originalHeight * scaleFactorY);
+        if((originalWidth * scaleFactorX) > 2500) {return;}
+        if((originalWidth * scaleFactorX) < 2.5) {return;}
+        if (!(shape.getShapeFactory() instanceof LineFactory)) {
+            if((originalHeight * scaleFactorY) > 1250) {return;}
+            if((originalHeight * scaleFactorY) < 1.25) {return;}
+        }
+        
+        receiver.resizeShape(shape, originalWidth * scaleFactorX, originalHeight * scaleFactorY);
     }
 
     /**
@@ -51,7 +59,7 @@ public class StretchShapeCommand implements CommandInterface {
      */
     @Override
     public void undo() {
-        receiver.stretchShape(shape, originalWidth, originalHeight);
+        receiver.resizeShape(shape, originalWidth, originalHeight);
     }
 }
 

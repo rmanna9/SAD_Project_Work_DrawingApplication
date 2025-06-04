@@ -57,10 +57,22 @@ public class PolygonDrawingState implements StateInterface {
      */
     @Override
     public void handleOnMouseClick(MouseEvent event) {
-        currentPoints.add(event.getX());
-        currentPoints.add(event.getY());
+        double x = event.getX();
+        double y = event.getY();
 
-        Circle point = new Circle(event.getX(), event.getY(), 2, Color.RED);
+        if (!currentPoints.isEmpty()) {
+            double lastX = currentPoints.get(currentPoints.size() - 2);
+            double lastY = currentPoints.get(currentPoints.size() - 1);
+
+            if (Math.abs(lastX - x) < 0.5 && Math.abs(lastY - y) < 0.5) {
+                return; 
+            }
+        }
+
+        currentPoints.add(x);
+        currentPoints.add(y);
+
+        Circle point = new Circle(x, y, 2, Color.RED);
         controller.getRoot().getChildren().add(point);
         previewPoints.add(point);
     }

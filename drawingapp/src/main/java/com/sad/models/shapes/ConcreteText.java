@@ -37,9 +37,13 @@ public class ConcreteText implements ShapeInterface, Serializable {
     /** The rotation angle of the text in degrees. */
     private double angle = 0;
 
+    private double width, height;
+
     private transient javafx.scene.transform.Scale mirrorScale = new javafx.scene.transform.Scale(1, 1, 0, 0);
     private double mirrorScaleX = 1;
     private double mirrorScaleY = 1;
+    private double scaleX = 1;
+    private double scaleY = 1;
 
     /**
      * Constructs a ConcreteText with the specified parameters.
@@ -75,15 +79,17 @@ public class ConcreteText implements ShapeInterface, Serializable {
             textNode.setFont(Font.font(fontSize));
             setAngle(angle);
             textNode.setUserData(this);
+            this.width = textNode.getBoundsInParent().getWidth();
+            this.height = textNode.getBoundsInParent().getHeight();
 
             textNode.applyCss();
             textNode.snapshot(null, null);
 
-            double centerX = textNode.getBoundsInParent().getMinX() + textNode.getBoundsInParent().getWidth() / 2;
-            double centerY = textNode.getBoundsInParent().getMinY() + textNode.getBoundsInParent().getHeight() / 2;
+            //double centerX = textNode.getBoundsInParent().getMinX() + textNode.getBoundsInParent().getWidth() / 2;
+            //double centerY = textNode.getBoundsInParent().getMinY() + textNode.getBoundsInParent().getHeight() / 2;
 
-            mirrorScale = new Scale(mirrorScaleX, mirrorScaleY, centerX, centerY); 
-            textNode.getTransforms().add(mirrorScale);
+            updateTransform();
+            
         }
         return textNode;
     }
@@ -249,6 +255,10 @@ public class ConcreteText implements ShapeInterface, Serializable {
         copy.setAngle(angle);
         copy.mirrorScaleX = this.mirrorScaleX;
         copy.mirrorScaleY = this.mirrorScaleY;
+        copy.scaleX = this.scaleX;
+        copy.scaleY = this.scaleY;
+        copy.setWidth(width);
+        copy.setHeight(height);
         return copy;
     }
 
@@ -320,10 +330,7 @@ public class ConcreteText implements ShapeInterface, Serializable {
      */
     @Override
     public double getWidth() {
-        if (textNode != null) {
-            return textNode.getBoundsInLocal().getWidth();
-        }
-        return 0;
+        return this.width;
     }
 
     /**
@@ -332,10 +339,7 @@ public class ConcreteText implements ShapeInterface, Serializable {
      */
     @Override
     public double getHeight() {
-        if (textNode != null) {
-            return textNode.getBoundsInLocal().getHeight();
-        }
-        return 0;
+        return this.height;
     }
 
     /**
@@ -345,7 +349,11 @@ public class ConcreteText implements ShapeInterface, Serializable {
      */
     @Override
     public void setWidth(double width) {
-        
+        this.width = width;
+        if (textNode != null && textNode.getLayoutBounds().getWidth() != 0) {
+            scaleX = width / textNode.getLayoutBounds().getWidth();
+            updateTransform();
+        }
     }
 
     /**
@@ -355,8 +363,28 @@ public class ConcreteText implements ShapeInterface, Serializable {
      */
     @Override
     public void setHeight(double height) {
-        
+        this.height = height;
+        if (textNode != null && textNode.getLayoutBounds().getHeight() != 0) {
+            scaleY = height / textNode.getLayoutBounds().getHeight();
+            updateTransform();
+        }
     }
+
+    private void updateTransform() {
+        if (textNode != null) {
+            textNode.getTransforms().remove(mirrorScale);
+
+            textNode.applyCss();
+            textNode.snapshot(null, null);
+
+            double centerX = textNode.getBoundsInParent().getMinX() + textNode.getBoundsInParent().getWidth() / 2;
+            double centerY = textNode.getBoundsInParent().getMinY() + textNode.getBoundsInParent().getHeight() / 2;
+
+            mirrorScale = new Scale(mirrorScaleX * scaleX, mirrorScaleY * scaleY, centerX, centerY);
+            textNode.getTransforms().add(mirrorScale);
+        }
+    }
+
 
     /**
      * Moves the text to a new position.
@@ -437,6 +465,8 @@ public class ConcreteText implements ShapeInterface, Serializable {
         out.writeDouble(fontSize);
         out.writeDouble(mirrorScale.getX()); 
         out.writeDouble(mirrorScale.getY()); 
+        out.writeDouble(scaleX);
+        out.writeDouble(scaleY);
     }
 
     /**
@@ -451,8 +481,11 @@ public class ConcreteText implements ShapeInterface, Serializable {
         borderColor = stringToColor((String) in.readObject());
         fillColor = stringToColor((String) in.readObject());
         fontSize = in.readDouble();
+        this.scaleX = in.readDouble();
+        this.scaleY = in.readDouble();
         double scaleX = in.readDouble();
         double scaleY = in.readDouble();
+        
 
         draw();
 

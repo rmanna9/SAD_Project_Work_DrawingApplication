@@ -389,7 +389,7 @@ public class Model {
      * @param newWidth The new width value to apply to the shape
      * @param newHeight The new height value to apply (ignored for line shapes)
      */
-    public void stretchShape(ShapeInterface shape, double newWidth, double newHeight) {
+    /* public void stretchShape(ShapeInterface shape, double newWidth, double newHeight) {
         if (shape != null) {
             // Always update width for all shapes
             shape.setWidth(newWidth);
@@ -399,7 +399,7 @@ public class Model {
                 shape.setHeight(newHeight);
             }
         }
-    }
+    } */
 
     /**
      * Rotates a shape to the specified angle.
